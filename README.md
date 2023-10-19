@@ -15,9 +15,9 @@ As such, our new platform will support only these operations:
 * Seeing who other users follow/are followed by
 * DMing other users
 
-Also, to prevent misuse of our platform, it is required to implement some admin tools, but, thankfully, our corporate overlord has suggested that for now a simple one that bans all users who have "Elon is bad" in posts they posted or messages they've sent is enough.
+Also, to prevent misuse of our platform, it is required to implement some admin tools, but, thankfully, our corporate overlord has suggested that for now a simple one: a big red button that deletes all users who have "Elon is bad" in posts they posted or messages they've sent is enough.
 
-Our users are also usually of a very curious kind, so there will be implemented a client-side feature that allows to calculate and show statistics about their posts and messages: when they post/message the most in a nice histogram, which words they use the most and so on...
+Our users are also usually of a very curious kind, so there will be implemented a client-side feature that allows to calculate and show statistics about their posts and messages: when they post/message the most in a nice histogram, which words they use the most and so on... To support that, the server will support a query returning for the user's post history/conversation words that were used there and the number of their occurrences, and also a query that returns all the times of sending for all the messages in a selected conversation.
 
 ## Boring implementation details
 
