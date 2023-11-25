@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
@@ -27,7 +28,7 @@ public class Person implements EntityWithId<String> {
     private String password;
 
     @OneToMany(mappedBy = "author")
-    private Collection<Post> posts;
+    private Collection<Post> posts = new ArrayList<>();
 
     @Override
     public String getId() {

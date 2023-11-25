@@ -34,6 +34,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/post/*")).permitAll()
+                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/post*")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/person")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/person/*")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/token")).permitAll()

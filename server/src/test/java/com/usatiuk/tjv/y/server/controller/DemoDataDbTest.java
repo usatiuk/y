@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.util.Collections;
@@ -56,6 +57,7 @@ public abstract class DemoDataDbTest {
 
     @BeforeEach
     void setup() {
+        assert !TestTransaction.isActive();
         person1 = personRepository.save(
                 new Person()
                         .setUsername("person1")
@@ -75,6 +77,7 @@ public abstract class DemoDataDbTest {
 
     @AfterEach
     void erase() {
+        assert !TestTransaction.isActive();
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "post", "person");
     }
 
