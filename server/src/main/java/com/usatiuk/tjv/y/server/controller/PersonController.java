@@ -7,8 +7,12 @@ import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.service.PersonService;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
 import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,9 +37,11 @@ public class PersonController {
 
     @GetMapping(path = "/{username}")
     public PersonTo get(@PathVariable String username) throws UserNotFoundException {
-        Person found = personService.readByUsername(username);
+        Optional<Person> found = personService.readByUsername(username);
 
-        return PersonMapper.makeDto(found);
+        if (found.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        return PersonMapper.makeDto(found.get());
     }
 
 }

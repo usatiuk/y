@@ -8,6 +8,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class PersonServiceImpl extends CrudServiceImpl<Person, String> implements PersonService {
     private final PersonRepository personRepository;
@@ -34,20 +36,16 @@ public class PersonServiceImpl extends CrudServiceImpl<Person, String> implement
     }
 
     @Override
-    public Person login(String username, String password) throws UserNotFoundException {
+    public Optional<Person> login(String username, String password) {
         var found = personRepository.findByUsername(username);
         if (found.isEmpty() || !passwordEncoder.matches(password, found.get().getPassword()))
-            throw new UserNotFoundException();
+            return Optional.empty();
 
-        return found.get();
+        return found;
     }
 
     @Override
-    public Person readByUsername(String username) throws UserNotFoundException {
-        var found = personRepository.findByUsername(username);
-        if (found.isEmpty())
-            throw new UserNotFoundException();
-
-        return found.get();
+    public Optional<Person> readByUsername(String username) {
+        return personRepository.findByUsername(username);
     }
 }
