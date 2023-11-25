@@ -44,6 +44,9 @@ public abstract class DemoDataDbTest {
     protected static final String person2Password = "p2p";
     protected Person person2;
     protected TokenResponse person2Auth;
+    protected static final String person3Password = "p3p";
+    protected Person person3;
+    protected TokenResponse person3Auth;
 
     protected Post post1;
     protected Post post2;
@@ -69,7 +72,13 @@ public abstract class DemoDataDbTest {
                         .setUsername("person2")
                         .setFullName("Person 2")
                         .setPassword(passwordEncoder.encode(person2Password)));
-        person2Auth = new TokenResponse(tokenService.generateToken(person1.getUuid()));
+        person2Auth = new TokenResponse(tokenService.generateToken(person2.getUuid()));
+        person3 = personRepository.save(
+                new Person()
+                        .setUsername("person3")
+                        .setFullName("Person 3")
+                        .setPassword(passwordEncoder.encode(person3Password)));
+        person3Auth = new TokenResponse(tokenService.generateToken(person3.getUuid()));
 
         post1 = postRepository.save(new Post().setAuthor(person1).setText("post 1"));
         post2 = postRepository.save(new Post().setAuthor(person2).setText("post 2"));
