@@ -6,11 +6,14 @@ import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.entity.Post;
 import com.usatiuk.tjv.y.server.service.PostService;
 import jakarta.persistence.EntityManager;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -32,11 +35,18 @@ public class PostController {
     }
 
     @GetMapping
-    public Iterable<Post> readAllOrByAuthor(@RequestParam Optional<String> author) {
+    public Stream<PostTo> readAllByAuthor(@RequestParam Optional<String> author) {
         if (author.isPresent())
-            return postService.readByAuthorId(author.get());
+            return postService.readByAuthorId(author.get()).stream().map(PostTo::new);
         else
-            return postService.readAll();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(path = "/{id}")
+    public PostTo get(@PathVariable long id) {
+        var post = postService.readById(id);
+        if (post.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return new PostTo(post.get());
     }
 
 }

@@ -2,8 +2,10 @@ package com.usatiuk.tjv.y.server.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -29,9 +31,11 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         return http.cors(withDefaults())
-                .csrf((csrf) -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(mvc.pattern("/person")).permitAll()
+                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/post/*")).permitAll()
+                        .requestMatchers(mvc.pattern(HttpMethod.POST, "/person")).permitAll()
+                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/person")).permitAll()
                         .anyRequest().hasAuthority(UserRoles.ROLE_USER.name()))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
