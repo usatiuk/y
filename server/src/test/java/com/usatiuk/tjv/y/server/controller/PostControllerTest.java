@@ -32,12 +32,12 @@ public class PostControllerTest extends DemoDataDbTest {
                 entity, PostTo.class);
 
         Assertions.assertNotNull(response);
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         PostTo reponsePostTo = response.getBody();
         Assertions.assertNotNull(reponsePostTo);
 
         Assertions.assertEquals(reponsePostTo.text(), "test text");
-        Assertions.assertEquals(reponsePostTo.authorUuid(), person1Auth.uuid());
+        Assertions.assertEquals(reponsePostTo.authorUuid(), person1.getUuid());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class PostControllerTest extends DemoDataDbTest {
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(response.text(), post1.getText());
-        Assertions.assertEquals(response.authorUuid(), person1Auth.uuid());
+        Assertions.assertEquals(response.authorUuid(), person1.getUuid());
     }
 
 }

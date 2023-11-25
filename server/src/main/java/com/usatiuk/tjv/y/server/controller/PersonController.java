@@ -1,30 +1,26 @@
 package com.usatiuk.tjv.y.server.controller;
 
-import com.usatiuk.tjv.y.server.dto.PersonAuthResponse;
-import com.usatiuk.tjv.y.server.dto.PersonLoginRequest;
+import com.usatiuk.tjv.y.server.dto.PersonTo;
 import com.usatiuk.tjv.y.server.dto.PersonSignupRequest;
+import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.service.PersonService;
-import com.usatiuk.tjv.y.server.service.PersonTokenService;
+import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
+import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PersonController {
     private final PersonService personService;
-    private final PersonTokenService personTokenService;
 
-    public PersonController(PersonService personService, PersonTokenService personTokenService) {
+    public PersonController(PersonService personService) {
         this.personService = personService;
-        this.personTokenService = personTokenService;
     }
 
     @PostMapping
-    public PersonAuthResponse signup(@RequestBody PersonSignupRequest signupRequest) {
+    public PersonTo signup(@RequestBody PersonSignupRequest signupRequest) throws UserAlreadyExistsException {
         Person toCreate = new Person();
         toCreate.setUsername(signupRequest.username())
                 .setPassword(signupRequest.password())
@@ -32,6 +28,14 @@ public class PersonController {
 
         Person created = personService.signup(toCreate);
 
-        return new PersonAuthResponse(created, personTokenService.generateToken(created.getId()));
+        return PersonMapper.makeDto(created);
     }
+
+    @GetMapping(path = "/{username}")
+    public PersonTo get(@PathVariable String username) throws UserNotFoundException {
+        Person found = personService.readByUsername(username);
+
+        return PersonMapper.makeDto(found);
+    }
+
 }

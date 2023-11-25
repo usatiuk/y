@@ -16,12 +16,12 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
-public class PersonTokenServiceImpl implements PersonTokenService {
+public class TokenServiceImpl implements TokenService {
     private static final Duration JWT_EXPIRY = Duration.ofMinutes(20);
 
     private final SecretKey key;
 
-    public PersonTokenServiceImpl(@Value("${jwt.secret}") String secret) {
+    public TokenServiceImpl(@Value("${jwt.secret}") String secret) {
         // FIXME:
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(Encoders.BASE64.encode(secret.getBytes())));
     }

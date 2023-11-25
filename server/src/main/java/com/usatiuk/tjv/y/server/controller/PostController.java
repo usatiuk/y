@@ -2,6 +2,7 @@ package com.usatiuk.tjv.y.server.controller;
 
 import com.usatiuk.tjv.y.server.dto.PostCreate;
 import com.usatiuk.tjv.y.server.dto.PostTo;
+import com.usatiuk.tjv.y.server.dto.converters.PostMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.entity.Post;
 import com.usatiuk.tjv.y.server.service.PostService;
@@ -31,13 +32,13 @@ public class PostController {
         Post post = new Post();
         post.setAuthor(entityManager.getReference(Person.class, principal.getName()));
         post.setText(postCreate.text());
-        return new PostTo(postService.create(post));
+        return PostMapper.makeDto(postService.create(post));
     }
 
     @GetMapping
     public Stream<PostTo> readAllByAuthor(@RequestParam Optional<String> author) {
         if (author.isPresent())
-            return postService.readByAuthorId(author.get()).stream().map(PostTo::new);
+            return postService.readByAuthorId(author.get()).stream().map(PostMapper::makeDto);
         else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
@@ -46,7 +47,7 @@ public class PostController {
     public PostTo get(@PathVariable long id) {
         var post = postService.readById(id);
         if (post.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        return new PostTo(post.get());
+        return PostMapper.makeDto(post.get());
     }
 
 }

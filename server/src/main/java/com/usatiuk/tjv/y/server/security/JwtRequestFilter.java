@@ -1,6 +1,6 @@
 package com.usatiuk.tjv.y.server.security;
 
-import com.usatiuk.tjv.y.server.service.PersonTokenService;
+import com.usatiuk.tjv.y.server.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,11 +18,11 @@ import java.util.Optional;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-    private final PersonTokenService personTokenService;
+    private final TokenService tokenService;
     private final JwtUserDetailsService jwtUserDetailsService;
 
-    public JwtRequestFilter(PersonTokenService personTokenService, JwtUserDetailsService jwtUserDetailsService) {
-        this.personTokenService = personTokenService;
+    public JwtRequestFilter(TokenService tokenService, JwtUserDetailsService jwtUserDetailsService) {
+        this.tokenService = tokenService;
         this.jwtUserDetailsService = jwtUserDetailsService;
     }
 
@@ -36,7 +36,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        Optional<String> userUuid = personTokenService.parseToken(token);
+        Optional<String> userUuid = tokenService.parseToken(token);
         if (userUuid.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
