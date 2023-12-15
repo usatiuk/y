@@ -72,14 +72,14 @@ public abstract class DemoDataDbTest {
                 new Person()
                         .setUsername("person2")
                         .setFullName("Person 2")
-                        .setPassword(passwordEncoder.encode(person2Password)));
+                        .setPassword(passwordEncoder.encode(person2Password)).setFollowing(List.of(person1)));
         person2Auth = new TokenResponse(tokenService.generateToken(person2.getUuid()));
         person3 = personRepository.save(
                 new Person()
                         .setUsername("person3")
                         .setFullName("Person 3")
                         .setPassword(passwordEncoder.encode(person3Password))
-                        .setFollowing(List.of(person2)));
+                        .setFollowing(List.of(person2, person1)));
         person3Auth = new TokenResponse(tokenService.generateToken(person3.getUuid()));
 
         post1 = postRepository.save(new Post().setAuthor(person1).setText("post 1"));

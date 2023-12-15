@@ -43,6 +43,11 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
+    @GetMapping(path = "/following")
+    public Stream<PostTo> readAllByFollowees(Principal principal) {
+        return postService.readByPersonFollowees(principal.getName()).stream().map(PostMapper::makeDto);
+    }
+
     @GetMapping(path = "/{id}")
     public PostTo get(@PathVariable long id) {
         var post = postService.readById(id);

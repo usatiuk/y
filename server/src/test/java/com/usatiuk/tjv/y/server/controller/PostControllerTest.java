@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class PostControllerTest extends DemoDataDbTest {
     @Autowired
@@ -72,4 +73,16 @@ public class PostControllerTest extends DemoDataDbTest {
         Assertions.assertIterableEquals(Arrays.asList(parsedResponse), repoResponse.stream().map(PostMapper::makeDto).toList());
     }
 
+    @Test
+    void shouldGetPostsByFollowees() {
+        var response = restTemplate.exchange(addr + "/post/following",
+                HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person3Auth)), PostTo[].class);
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        var parsedResponse = response.getBody();
+
+        Assertions.assertNotNull(parsedResponse);
+        Assertions.assertEquals(2, parsedResponse.length);
+        Assertions.assertIterableEquals(Arrays.asList(parsedResponse), List.of(PostMapper.makeDto(post1), PostMapper.makeDto(post2)));
+    }
 }

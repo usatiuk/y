@@ -7,10 +7,8 @@ import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.service.PersonService;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
 import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.Optional;
@@ -41,7 +39,7 @@ public class PersonController {
     public PersonTo get(@PathVariable String username) throws UserNotFoundException {
         Optional<Person> found = personService.readByUsername(username);
 
-        if (found.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        if (found.isEmpty()) throw new UserNotFoundException();
 
         return PersonMapper.makeDto(found.get());
     }

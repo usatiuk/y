@@ -24,4 +24,9 @@ public class PostServiceImpl extends CrudServiceImpl<Post, Long> implements Post
     public Collection<Post> readByAuthorId(String authorId) {
         return postRepository.findByAuthorUuid(authorId);
     }
+
+    @Override
+    public Collection<Post> readByPersonFollowees(String personUuid) {
+        return postRepository.findByPersonFollowees(personUuid);
+    }
 }
