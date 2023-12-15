@@ -46,4 +46,35 @@ public class PersonControllerTest extends DemoDataDbTest {
         Assertions.assertEquals(personToResponse.fullName(), person1.getFullName());
     }
 
+    @Test
+    void shouldGetFollowers() {
+        var response = restTemplate.exchange(addr + "/person/followers",
+                HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person2Auth)), PersonTo[].class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        PersonTo[] personToResponse = response.getBody();
+        Assertions.assertNotNull(personToResponse);
+
+        Assertions.assertEquals(1, personToResponse.length);
+        Assertions.assertEquals(personToResponse[0].fullName(), person3.getFullName());
+    }
+
+    @Test
+    void shouldGetFollowees() {
+        var response = restTemplate.exchange(addr + "/person/following",
+                HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person3Auth)), PersonTo[].class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        PersonTo[] personToResponse = response.getBody();
+        Assertions.assertNotNull(personToResponse);
+
+        Assertions.assertEquals(1, personToResponse.length);
+        Assertions.assertEquals(personToResponse[0].fullName(), person2.getFullName());
+
+    }
+
 }

@@ -12,7 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,6 +44,16 @@ public class PersonController {
         if (found.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
         return PersonMapper.makeDto(found.get());
+    }
+
+    @GetMapping(path = "/followers")
+    public Stream<PersonTo> getFollowers(Principal principal) throws UserNotFoundException {
+        return personService.getFollowers(principal.getName()).stream().map(PersonMapper::makeDto);
+    }
+
+    @GetMapping(path = "/following")
+    public Stream<PersonTo> getFollowing(Principal principal) throws UserNotFoundException {
+        return personService.getFollowing(principal.getName()).stream().map(PersonMapper::makeDto);
     }
 
 }

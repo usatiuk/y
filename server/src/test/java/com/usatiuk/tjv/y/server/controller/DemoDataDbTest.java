@@ -20,6 +20,7 @@ import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.util.Collections;
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class DemoDataDbTest {
@@ -77,7 +78,8 @@ public abstract class DemoDataDbTest {
                 new Person()
                         .setUsername("person3")
                         .setFullName("Person 3")
-                        .setPassword(passwordEncoder.encode(person3Password)));
+                        .setPassword(passwordEncoder.encode(person3Password))
+                        .setFollowing(List.of(person2)));
         person3Auth = new TokenResponse(tokenService.generateToken(person3.getUuid()));
 
         post1 = postRepository.save(new Post().setAuthor(person1).setText("post 1"));
@@ -87,7 +89,7 @@ public abstract class DemoDataDbTest {
     @AfterEach
     void erase() {
         assert !TestTransaction.isActive();
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "post", "person");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "user_follows", "post", "person");
     }
 
 }

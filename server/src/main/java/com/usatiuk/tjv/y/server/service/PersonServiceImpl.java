@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
@@ -47,5 +48,15 @@ public class PersonServiceImpl extends CrudServiceImpl<Person, String> implement
     @Override
     public Optional<Person> readByUsername(String username) {
         return personRepository.findByUsername(username);
+    }
+
+    @Override
+    public Collection<Person> getFollowers(String uuid) throws UserNotFoundException {
+        return personRepository.findById(uuid).orElseThrow(UserNotFoundException::new).getFollowers();
+    }
+
+    @Override
+    public Collection<Person> getFollowing(String uuid) throws UserNotFoundException {
+        return personRepository.findById(uuid).orElseThrow(UserNotFoundException::new).getFollowing();
     }
 }
