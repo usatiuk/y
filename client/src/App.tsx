@@ -11,7 +11,7 @@ import { Login } from "./Login";
 import { Signup } from "./Signup";
 import { Home } from "./Home";
 import { loginAction, profileSelfAction, signupAction } from "./actions";
-import { homeLoader, profileSelfLoader } from "./loaders";
+import { homeLoader, profileLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { Feed } from "./Feed";
 import { Messages } from "./Messages";
@@ -40,14 +40,14 @@ const router = createBrowserRouter([
             { path: "messages", element: <Messages /> },
             {
                 path: "profile",
-                loader: async () => {
-                    return await profileSelfLoader();
-                },
+                loader: profileLoader,
                 action: profileSelfAction,
                 element: <Profile self={true} />,
             },
             {
                 path: "profile/:username",
+                loader: profileLoader,
+                // action: profileSelfAction,
                 element: <Profile self={false} />,
             },
         ],

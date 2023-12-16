@@ -1,8 +1,7 @@
 import "./Profile.scss";
 import { Form, Link, useLoaderData } from "react-router-dom";
-import { LoaderToType, profileSelfLoader } from "./loaders";
+import { LoaderToType, profileLoader } from "./loaders";
 import { isError } from "./api/dto";
-import { ProfileCard } from "./ProfileCard";
 import { Post } from "./Post";
 
 export interface IProfileProps {
@@ -10,9 +9,7 @@ export interface IProfileProps {
 }
 
 export function Profile({ self }: IProfileProps) {
-    const loaderData = useLoaderData() as LoaderToType<
-        typeof profileSelfLoader
-    >;
+    const loaderData = useLoaderData() as LoaderToType<typeof profileLoader>;
 
     if (!loaderData || isError(loaderData)) {
         return <div>Error</div>;
@@ -28,14 +25,19 @@ export function Profile({ self }: IProfileProps) {
                 <span className={"fullName"}>{loaderData.user.fullName}</span>
                 <span className={"username"}>{loaderData.user.fullName}</span>
             </div>
-            <div className={"newPost"}>
-                <Form method="post">
-                    <textarea placeholder={"Write something!"} name="text" />
-                    <button name="intent" value="post" type="submit">
-                        Post
-                    </button>
-                </Form>
-            </div>
+            {self && (
+                <div className={"newPost"}>
+                    <Form method="post">
+                        <textarea
+                            placeholder={"Write something!"}
+                            name="text"
+                        />
+                        <button name="intent" value="post" type="submit">
+                            Post
+                        </button>
+                    </Form>
+                </div>
+            )}
             <div className={"posts"}>
                 {sortedPosts &&
                     sortedPosts.map((p) => {

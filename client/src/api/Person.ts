@@ -16,3 +16,9 @@ export async function signup(
 export async function getSelf(): Promise<TPersonToResp> {
     return fetchJSONAuth("/person", "GET", PersonToResp);
 }
+
+export async function getPersonByUsername(
+    username: string,
+): Promise<TPersonToResp> {
+    return fetchJSONAuth("/person/" + username, "GET", PersonToResp);
+}

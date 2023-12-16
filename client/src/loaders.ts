@@ -1,4 +1,4 @@
-import { getSelf } from "./api/Person";
+import { getPersonByUsername, getSelf } from "./api/Person";
 import { deleteToken, getToken } from "./api/utils";
 import { redirect } from "react-router-dom";
 import { isError } from "./api/dto";
@@ -24,9 +24,15 @@ export async function homeLoader() {
     return await getCheckUserSelf();
 }
 
-export async function profileSelfLoader() {
-    const user = await getCheckUserSelf();
-    if (user instanceof Response) {
+export async function profileLoader({
+    params,
+}: {
+    params: { username?: string };
+}) {
+    const user = params.username
+        ? await getPersonByUsername(params.username)
+        : await getCheckUserSelf();
+    if (!user || user instanceof Response || isError(user)) {
         return user;
     }
 
