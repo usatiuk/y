@@ -28,7 +28,7 @@ public class TokenController {
     public TokenResponseTo request(@RequestBody TokenRequestTo tokenRequestTo) throws UserNotFoundException {
         Optional<Person> found = personService.login(tokenRequestTo.username(), tokenRequestTo.password());
 
-        if (found.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        if (found.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Couldn't find user");
 
         return new TokenResponseTo(tokenService.generateToken(found.get().getId()));
     }

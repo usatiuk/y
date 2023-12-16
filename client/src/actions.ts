@@ -11,7 +11,7 @@ export async function loginAction({ request }: ActionFunctionArgs) {
         formData.get("password")!.toString(),
     );
 
-    if (!isError(ret)) {
+    if (ret && !isError(ret)) {
         setToken(ret.token);
         return redirect("/home");
     }
@@ -21,9 +21,26 @@ export async function loginAction({ request }: ActionFunctionArgs) {
 
 export async function signupAction({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
-    return await signup(
+    const s = await signup(
         formData.get("username")!.toString(),
         formData.get("fullName")!.toString(),
         formData.get("password")!.toString(),
     );
+
+    if (!s || isError(s)) {
+        return s;
+    }
+
+    // Login if everything's OK
+    const ret = await login(
+        formData.get("username")!.toString(),
+        formData.get("password")!.toString(),
+    );
+
+    if (ret && !isError(ret)) {
+        setToken(ret.token);
+        return redirect("/home");
+    }
+
+    return ret;
 }

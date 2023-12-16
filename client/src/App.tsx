@@ -13,6 +13,7 @@ import { Home } from "./Home";
 import { loginAction, signupAction } from "./actions";
 import { homeLoader } from "./loaders";
 import { isError } from "./api/dto";
+import { Feed } from "./Feed";
 
 const router = createBrowserRouter([
     {
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
             return ret;
         },
         element: <Home />,
+        children: [{ path: "feed", element: <Feed /> }],
     },
     {
         path: "/login",

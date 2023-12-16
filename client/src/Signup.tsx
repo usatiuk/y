@@ -9,7 +9,7 @@ export function Signup() {
         | undefined;
 
     if (data && !isError(data)) {
-        return <div className="authForm">Success, now log in!;</div>;
+        return <div className="authForm">Signup success</div>;
     }
 
     let errors: JSX.Element[] = [];
