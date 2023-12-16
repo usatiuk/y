@@ -3,6 +3,7 @@ import { Form, Link, useLoaderData } from "react-router-dom";
 import { LoaderToType, profileSelfLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { ProfileCard } from "./ProfileCard";
+import { Post } from "./Post";
 
 export interface IProfileProps {
     self: boolean;
@@ -16,6 +17,11 @@ export function Profile(props: IProfileProps) {
     if (!loaderData || isError(loaderData)) {
         return <div>Error</div>;
     }
+
+    const sortedPosts = loaderData.posts?.sort(
+        (a, b) => b.createdAt - a.createdAt,
+    );
+
     return (
         <div className={"profileView"}>
             <div className={"profileInfo"}>
@@ -29,12 +35,15 @@ export function Profile(props: IProfileProps) {
                 </Form>
             </div>
             <div className={"posts"}>
-                {loaderData.posts &&
-                    loaderData.posts.map((p) => {
+                {sortedPosts &&
+                    sortedPosts.map((p) => {
+                        const date = new Date(p.createdAt * 1000);
                         return (
-                            <div key={p.id} className={"post"}>
-                                {p.text}
-                            </div>
+                            <Post
+                                text={p.text}
+                                createdDate={`${date.toUTCString()}`}
+                                key={p.id}
+                            />
                         );
                     })}
             </div>

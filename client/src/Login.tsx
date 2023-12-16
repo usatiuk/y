@@ -1,20 +1,14 @@
 import "./Auth.scss";
 import { Form, Link, useActionData, useNavigation } from "react-router-dom";
-import { loginAction } from "./actions";
+import { ActionToType, loginAction } from "./actions";
 import { isError } from "./api/dto";
 
 export function Login() {
-    const data = useActionData() as
-        | Awaited<ReturnType<typeof loginAction>>
-        | undefined;
-
-    if (data && !isError(data)) {
-        return <div className="authForm">Login success</div>;
-    }
+    const data = useActionData() as ActionToType<typeof loginAction>;
 
     let errors: JSX.Element[] = [];
 
-    if (data) {
+    if (isError(data)) {
         errors = data.errors.map((e) => {
             return <a>{e}</a>;
         });

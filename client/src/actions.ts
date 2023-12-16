@@ -5,6 +5,10 @@ import { isError } from "./api/dto";
 import { setToken } from "./api/utils";
 import { post } from "./api/Post";
 
+export type ActionToType<T extends (...args: any) => any> =
+    | Exclude<Awaited<ReturnType<T>>, Response>
+    | undefined;
+
 export async function loginAction({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
     const ret = await login(

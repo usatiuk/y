@@ -45,6 +45,7 @@ export const PostTo = z.object({
     id: z.number(),
     authorUuid: z.string(),
     text: z.string(),
+    createdAt: z.number(),
 });
 export type TPostTo = z.infer<typeof PostTo>;
 

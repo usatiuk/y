@@ -1,11 +1,18 @@
 package com.usatiuk.tjv.y.server.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -21,8 +28,11 @@ public class Post implements EntityWithId<Long> {
     @ManyToOne
     private Person author;
 
-    @Lob
+    @NotBlank
     private String text;
+
+    @CreationTimestamp
+    private Instant createdAt;
 
     @Override
     public Long getId() {
