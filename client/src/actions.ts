@@ -3,6 +3,7 @@ import { ActionFunctionArgs, redirect } from "react-router-dom";
 import { login } from "./api/Token";
 import { isError } from "./api/dto";
 import { setToken } from "./api/utils";
+import { post } from "./api/Post";
 
 export async function loginAction({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
@@ -43,4 +44,9 @@ export async function signupAction({ request }: ActionFunctionArgs) {
     }
 
     return ret;
+}
+
+export async function profileSelfAction({ request }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    return await post(formData.get("text")!.toString());
 }

@@ -1,0 +1,15 @@
+.profileCard {
+  width: 15rem;
+  height: 5rem;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #EFEFEF;
+  border-radius: 7px;
+  padding: 1rem;
+  .fullName{
+    font-size: 1.3rem;
+  }
+  .username{
+
+  }
+}

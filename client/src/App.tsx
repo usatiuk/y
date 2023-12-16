@@ -10,10 +10,13 @@ import { deleteToken, getToken } from "./api/utils";
 import { Login } from "./Login";
 import { Signup } from "./Signup";
 import { Home } from "./Home";
-import { loginAction, signupAction } from "./actions";
-import { homeLoader } from "./loaders";
+import { loginAction, profileSelfAction, signupAction } from "./actions";
+import { homeLoader, profileSelfLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { Feed } from "./Feed";
+import { Messages } from "./Messages";
+import { Profile } from "./Profile";
+import { getSelf } from "./api/Person";
 
 const router = createBrowserRouter([
     {
@@ -29,18 +32,25 @@ const router = createBrowserRouter([
     {
         path: "/home",
         loader: async () => {
-            if (getToken() == null) {
-                return redirect("/login");
-            }
-            const ret = await homeLoader();
-            if (isError(ret)) {
-                deleteToken();
-                return redirect("/");
-            }
-            return ret;
+            return await homeLoader();
         },
         element: <Home />,
-        children: [{ path: "feed", element: <Feed /> }],
+        children: [
+            { path: "feed", element: <Feed /> },
+            { path: "messages", element: <Messages /> },
+            {
+                path: "profile",
+                loader: async () => {
+                    return await profileSelfLoader();
+                },
+                action: profileSelfAction,
+                element: <Profile self={true} />,
+            },
+            {
+                path: "profile/:username",
+                element: <Profile self={false} />,
+            },
+        ],
     },
     {
         path: "/login",

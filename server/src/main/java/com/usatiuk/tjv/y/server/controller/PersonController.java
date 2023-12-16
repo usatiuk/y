@@ -44,7 +44,7 @@ public class PersonController {
         return PersonMapper.makeDto(found.get());
     }
 
-    @GetMapping(path = "")
+    @GetMapping
     public PersonTo getSelf(Principal principal) throws UserNotFoundException {
         Optional<Person> found = personService.readById(principal.getName());
 

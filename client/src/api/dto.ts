@@ -41,6 +41,22 @@ export type TTokenTo = z.infer<typeof TokenTo>;
 export const TokenToResp = CreateAPIResponse(TokenTo);
 export type TTokenToResp = z.infer<typeof TokenToResp>;
 
+export const PostTo = z.object({
+    id: z.number(),
+    authorUuid: z.string(),
+    text: z.string(),
+});
+export type TPostTo = z.infer<typeof PostTo>;
+
+export const PostToArr = z.array(PostTo);
+export type TPostToArr = z.infer<typeof PostToArr>;
+
+export const PostToResp = CreateAPIResponse(PostTo);
+export type TPostToResp = z.infer<typeof PostToResp>;
+
+export const PostToArrResp = CreateAPIResponse(PostToArr);
+export type TPostToArrResp = z.infer<typeof PostToArrResp>;
+
 export function isError(value: unknown): value is TErrorTo {
     return ErrorTo.safeParse(value).success;
 }

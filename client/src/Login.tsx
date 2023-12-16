@@ -25,7 +25,7 @@ export function Login() {
 
     return (
         <div className="authForm">
-            {errors}
+            <div className={"errors"}>{errors}</div>
             <Form method="post">
                 <label htmlFor="fname">Username:</label>
                 <input type="text" name="username" />
