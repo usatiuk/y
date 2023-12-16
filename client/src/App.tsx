@@ -11,12 +11,13 @@ import { Login } from "./Login";
 import { Signup } from "./Signup";
 import { Home } from "./Home";
 import { loginAction, profileSelfAction, signupAction } from "./actions";
-import { homeLoader, profileLoader } from "./loaders";
+import { homeLoader, profileLoader, userListLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { Feed } from "./Feed";
 import { Messages } from "./Messages";
 import { Profile } from "./Profile";
-import { getSelf } from "./api/Person";
+import { UserList } from "./UserList";
+import { getAllPerson } from "./api/Person";
 
 const router = createBrowserRouter([
     {
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
         children: [
             { path: "feed", element: <Feed /> },
             { path: "messages", element: <Messages /> },
+            { path: "users", element: <UserList />, loader: userListLoader },
             {
                 path: "profile",
                 loader: profileLoader,

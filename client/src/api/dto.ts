@@ -33,6 +33,12 @@ export type TPersonTo = z.infer<typeof PersonTo>;
 export const PersonToResp = CreateAPIResponse(PersonTo);
 export type TPersonToResp = z.infer<typeof PersonToResp>;
 
+export const PersonToArr = z.array(PersonTo);
+export type TPersonToArr = z.infer<typeof PersonToArr>;
+
+export const PersonToArrResp = CreateAPIResponse(PersonToArr);
+export type TPersonToArrResp = z.infer<typeof PersonToArrResp>;
+
 export const TokenRequestTo = z.object({
     username: z.string(),
     password: z.string(),

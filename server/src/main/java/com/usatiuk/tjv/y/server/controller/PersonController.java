@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -35,8 +36,8 @@ public class PersonController {
         return PersonMapper.makeDto(created);
     }
 
-    @GetMapping(path = "/{username}")
-    public PersonTo get(@PathVariable String username) throws UserNotFoundException {
+    @GetMapping(path = "/by-username/{username}")
+    public PersonTo getByUsername(@PathVariable String username) throws UserNotFoundException {
         Optional<Person> found = personService.readByUsername(username);
 
         if (found.isEmpty()) throw new UserNotFoundException();
@@ -44,13 +45,28 @@ public class PersonController {
         return PersonMapper.makeDto(found.get());
     }
 
-    @GetMapping
+    @GetMapping(path = "/by-uuid/{uuid}")
+    public PersonTo getByUuid(@PathVariable String uuid) throws UserNotFoundException {
+        Optional<Person> found = personService.readById(uuid);
+
+        if (found.isEmpty()) throw new UserNotFoundException();
+
+        return PersonMapper.makeDto(found.get());
+    }
+
+
+    @GetMapping(path = "/self")
     public PersonTo getSelf(Principal principal) throws UserNotFoundException {
         Optional<Person> found = personService.readById(principal.getName());
 
         if (found.isEmpty()) throw new UserNotFoundException();
 
         return PersonMapper.makeDto(found.get());
+    }
+
+    @GetMapping
+    public Stream<PersonTo> getAll() throws UserNotFoundException {
+        return StreamSupport.stream(personService.readAll().spliterator(), false).map(PersonMapper::makeDto);
     }
 
     @GetMapping(path = "/followers")

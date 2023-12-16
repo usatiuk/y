@@ -1,5 +1,10 @@
 import { fetchJSON, fetchJSONAuth } from "./utils";
-import { PersonToResp, TPersonToResp } from "./dto";
+import {
+    PersonToArrResp,
+    PersonToResp,
+    TPersonToArrResp,
+    TPersonToResp,
+} from "./dto";
 
 export async function signup(
     username: string,
@@ -13,12 +18,24 @@ export async function signup(
     });
 }
 
+export async function getPersonByUuid(uuid: string): Promise<TPersonToResp> {
+    return fetchJSONAuth("/person/by-uuid/" + uuid, "GET", PersonToResp);
+}
+
 export async function getSelf(): Promise<TPersonToResp> {
-    return fetchJSONAuth("/person", "GET", PersonToResp);
+    return fetchJSONAuth("/person/self", "GET", PersonToResp);
+}
+
+export async function getAllPerson(): Promise<TPersonToArrResp> {
+    return fetchJSONAuth("/person", "GET", PersonToArrResp);
 }
 
 export async function getPersonByUsername(
     username: string,
 ): Promise<TPersonToResp> {
-    return fetchJSONAuth("/person/" + username, "GET", PersonToResp);
+    return fetchJSONAuth(
+        "/person/by-username/" + username,
+        "GET",
+        PersonToResp,
+    );
 }

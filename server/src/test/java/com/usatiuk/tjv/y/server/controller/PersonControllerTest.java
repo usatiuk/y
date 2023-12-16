@@ -37,7 +37,7 @@ public class PersonControllerTest extends DemoDataDbTest {
 
     @Test
     void shouldGet() {
-        var response = restTemplate.exchange(addr + "/person/" + person1.getUsername(),
+        var response = restTemplate.exchange(addr + "/person/by-username/" + person1.getUsername(),
                 HttpMethod.GET, HttpEntity.EMPTY, PersonTo.class);
 
         Assertions.assertNotNull(response);
@@ -52,7 +52,7 @@ public class PersonControllerTest extends DemoDataDbTest {
 
     @Test
     void shouldGetSelf() {
-        var response = restTemplate.exchange(addr + "/person",
+        var response = restTemplate.exchange(addr + "/person/self",
                 HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person1Auth)), PersonTo.class);
 
         Assertions.assertNotNull(response);

@@ -33,6 +33,9 @@ export function Home() {
                     <NavLink to={"messages"} className={activePendingClassName}>
                         Messages
                     </NavLink>
+                    <NavLink to={"users"} className={activePendingClassName}>
+                        Users
+                    </NavLink>
                     <NavLink to={"profile"} className={activePendingClassName}>
                         Profile
                     </NavLink>

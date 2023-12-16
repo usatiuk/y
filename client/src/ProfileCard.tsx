@@ -1,4 +1,5 @@
 import "./ProfileCard.scss";
+import { Link } from "react-router-dom";
 
 export function ProfileCard({
     username,
@@ -9,8 +10,12 @@ export function ProfileCard({
 }) {
     return (
         <div className={"profileCard"}>
-            <span className={"fullName"}>{fullName}</span>
-            <span className={"username"}>{username}</span>
+            <Link to={`/home/profile/${username}`} className={"fullName"}>
+                {fullName}
+            </Link>
+            <Link to={`/home/profile/${username}`} className={"username"}>
+                {username}
+            </Link>
         </div>
     );
 }
