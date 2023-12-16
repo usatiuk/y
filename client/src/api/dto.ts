@@ -10,6 +10,12 @@ function CreateAPIResponse<T extends z.ZodTypeAny>(obj: T) {
     return z.union([ErrorTo, obj]);
 }
 
+export const NoContentTo = z.object({});
+export type TNoContentTo = z.infer<typeof NoContentTo>;
+
+export const NoContentToResp = CreateAPIResponse(NoContentTo);
+export type TNoContentToResp = z.infer<typeof NoContentToResp>;
+
 export const PersonSignupTo = z.object({
     username: z.string(),
     fullName: z.string(),

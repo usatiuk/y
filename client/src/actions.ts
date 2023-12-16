@@ -3,7 +3,7 @@ import { ActionFunctionArgs, redirect } from "react-router-dom";
 import { login } from "./api/Token";
 import { isError } from "./api/dto";
 import { setToken } from "./api/utils";
-import { post } from "./api/Post";
+import { createPost, deletePost } from "./api/Post";
 
 export type ActionToType<T extends (...args: any) => any> =
     | Exclude<Awaited<ReturnType<T>>, Response>
@@ -52,5 +52,12 @@ export async function signupAction({ request }: ActionFunctionArgs) {
 
 export async function profileSelfAction({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
-    return await post(formData.get("text")!.toString());
+    const intent = formData.get("intent")!.toString();
+    if (intent == "post") {
+        return await createPost(formData.get("text")!.toString());
+    } else if (intent == "deletePost") {
+        return await deletePost(
+            parseInt(formData.get("postToDeleteId")!.toString()),
+        );
+    }
 }

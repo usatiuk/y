@@ -9,7 +9,7 @@ export interface IProfileProps {
     self: boolean;
 }
 
-export function Profile(props: IProfileProps) {
+export function Profile({ self }: IProfileProps) {
     const loaderData = useLoaderData() as LoaderToType<
         typeof profileSelfLoader
     >;
@@ -31,7 +31,9 @@ export function Profile(props: IProfileProps) {
             <div className={"newPost"}>
                 <Form method="post">
                     <textarea placeholder={"Write something!"} name="text" />
-                    <button type="submit">Post</button>
+                    <button name="intent" value="post" type="submit">
+                        Post
+                    </button>
                 </Form>
             </div>
             <div className={"posts"}>
@@ -43,6 +45,8 @@ export function Profile(props: IProfileProps) {
                                 text={p.text}
                                 createdDate={`${date.toUTCString()}`}
                                 key={p.id}
+                                id={p.id}
+                                actions={self}
                             />
                         );
                     })}

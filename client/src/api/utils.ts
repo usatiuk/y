@@ -47,7 +47,11 @@ export async function fetchJSON<T, P extends { parse: (arg: string) => T }>(
         headers: reqHeaders(),
         body: reqBody(),
     });
-    return parser.parse(await response.json());
+
+    const json = await response.json().catch(() => {
+        return {};
+    });
+    return parser.parse(json);
 }
 
 export async function fetchJSONAuth<T, P extends { parse: (arg: string) => T }>(

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -53,6 +54,18 @@ public class PostController {
         var post = postService.readById(id);
         if (post.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         return PostMapper.makeDto(post.get());
+    }
+
+
+    @DeleteMapping(path = "/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(Principal principal, @PathVariable long id) {
+        var read = postService.readById(id);
+        if (read.isEmpty()) return;
+        if (!Objects.equals(read.get().getAuthor().getId(), principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        postService.deleteById(id);
     }
 
 }
