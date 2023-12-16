@@ -1,6 +1,6 @@
 package com.usatiuk.tjv.y.server.controller;
 
-import com.usatiuk.tjv.y.server.dto.TokenResponse;
+import com.usatiuk.tjv.y.server.dto.TokenResponseTo;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.entity.Post;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
@@ -41,18 +41,18 @@ public abstract class DemoDataDbTest {
 
     protected static final String person1Password = "p1p";
     protected Person person1;
-    protected TokenResponse person1Auth;
+    protected TokenResponseTo person1Auth;
     protected static final String person2Password = "p2p";
     protected Person person2;
-    protected TokenResponse person2Auth;
+    protected TokenResponseTo person2Auth;
     protected static final String person3Password = "p3p";
     protected Person person3;
-    protected TokenResponse person3Auth;
+    protected TokenResponseTo person3Auth;
 
     protected Post post1;
     protected Post post2;
 
-    protected HttpHeaders createAuthHeaders(TokenResponse personAuth) {
+    protected HttpHeaders createAuthHeaders(TokenResponseTo personAuth) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + personAuth.token());
@@ -67,20 +67,20 @@ public abstract class DemoDataDbTest {
                         .setUsername("person1")
                         .setFullName("Person 1")
                         .setPassword(passwordEncoder.encode(person1Password)));
-        person1Auth = new TokenResponse(tokenService.generateToken(person1.getUuid()));
+        person1Auth = new TokenResponseTo(tokenService.generateToken(person1.getUuid()));
         person2 = personRepository.save(
                 new Person()
                         .setUsername("person2")
                         .setFullName("Person 2")
                         .setPassword(passwordEncoder.encode(person2Password)).setFollowing(List.of(person1)));
-        person2Auth = new TokenResponse(tokenService.generateToken(person2.getUuid()));
+        person2Auth = new TokenResponseTo(tokenService.generateToken(person2.getUuid()));
         person3 = personRepository.save(
                 new Person()
                         .setUsername("person3")
                         .setFullName("Person 3")
                         .setPassword(passwordEncoder.encode(person3Password))
                         .setFollowing(List.of(person2, person1)));
-        person3Auth = new TokenResponse(tokenService.generateToken(person3.getUuid()));
+        person3Auth = new TokenResponseTo(tokenService.generateToken(person3.getUuid()));
 
         post1 = postRepository.save(new Post().setAuthor(person1).setText("post 1"));
         post2 = postRepository.save(new Post().setAuthor(person2).setText("post 2"));

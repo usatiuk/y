@@ -1,7 +1,7 @@
 package com.usatiuk.tjv.y.server.controller;
 
+import com.usatiuk.tjv.y.server.dto.PersonSignupTo;
 import com.usatiuk.tjv.y.server.dto.PersonTo;
-import com.usatiuk.tjv.y.server.dto.PersonSignupRequest;
 import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.service.PersonService;
@@ -24,7 +24,7 @@ public class PersonController {
     }
 
     @PostMapping
-    public PersonTo signup(@RequestBody PersonSignupRequest signupRequest) throws UserAlreadyExistsException {
+    public PersonTo signup(@RequestBody PersonSignupTo signupRequest) throws UserAlreadyExistsException {
         Person toCreate = new Person();
         toCreate.setUsername(signupRequest.username())
                 .setPassword(signupRequest.password())
@@ -38,6 +38,15 @@ public class PersonController {
     @GetMapping(path = "/{username}")
     public PersonTo get(@PathVariable String username) throws UserNotFoundException {
         Optional<Person> found = personService.readByUsername(username);
+
+        if (found.isEmpty()) throw new UserNotFoundException();
+
+        return PersonMapper.makeDto(found.get());
+    }
+
+    @GetMapping(path = "")
+    public PersonTo getSelf(Principal principal) throws UserNotFoundException {
+        Optional<Person> found = personService.readById(principal.getName());
 
         if (found.isEmpty()) throw new UserNotFoundException();
 

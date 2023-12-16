@@ -1,6 +1,8 @@
 package com.usatiuk.tjv.y.server.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,10 +23,15 @@ public class Person implements EntityWithId<String> {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
 
+    @Size(max = 100, message = "Username can't be longer than 100")
+    @NotBlank(message = "Username can't be empty")
     @Column(unique = true)
     private String username;
 
+    @Size(max = 100, message = "Name can't be longer than 100")
+    @NotBlank(message = "Name can't be empty")
     private String fullName;
+    @NotBlank(message = "Password can't be empty")
     private String password;
 
     @OneToMany(mappedBy = "author")

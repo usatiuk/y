@@ -1,0 +1,68 @@
+// import { apiRoot } from "~src/env";
+
+const apiRoot: string = "http://localhost:8080";
+
+let token: string | null;
+
+export function setToken(_token: string): void {
+    token = _token;
+    localStorage.setItem("jwt_token", token);
+}
+
+export function getToken(): string | null {
+    if (!token && localStorage.getItem("jwt_token") != null) {
+        token = localStorage.getItem("jwt_token");
+    }
+    return token;
+}
+
+export function deleteToken(): void {
+    token = null;
+    localStorage.removeItem("jwt_token");
+}
+
+export async function fetchJSON<T, P extends { parse: (arg: string) => T }>(
+    path: string,
+    method: string,
+    parser: P,
+    body?: string | Record<string, unknown> | File,
+    headers?: Record<string, string>,
+): Promise<T> {
+    const reqBody = () =>
+        body instanceof File
+            ? (() => {
+                  const fd = new FormData();
+                  fd.append("file", body);
+                  return fd;
+              })()
+            : JSON.stringify(body);
+
+    const reqHeaders = () =>
+        body instanceof File
+            ? headers
+            : { ...headers, "Content-Type": "application/json" };
+
+    const response = await fetch(apiRoot + path, {
+        method,
+        headers: reqHeaders(),
+        body: reqBody(),
+    });
+    return parser.parse(await response.json());
+}
+
+export async function fetchJSONAuth<T, P extends { parse: (arg: string) => T }>(
+    path: string,
+    method: string,
+    parser: P,
+    body?: string | Record<string, unknown> | File,
+    headers?: Record<string, unknown>,
+): Promise<T> {
+    if (token) {
+        return fetchJSON(path, method, parser, body, {
+            ...headers,
+            Authorization: `Bearer ${token}`,
+        });
+    } else {
+        throw new Error("Not logged in");
+    }
+}

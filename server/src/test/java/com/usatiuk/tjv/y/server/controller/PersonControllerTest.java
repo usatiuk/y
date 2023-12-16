@@ -1,6 +1,6 @@
 package com.usatiuk.tjv.y.server.controller;
 
-import com.usatiuk.tjv.y.server.dto.PersonSignupRequest;
+import com.usatiuk.tjv.y.server.dto.PersonSignupTo;
 import com.usatiuk.tjv.y.server.dto.PersonTo;
 import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
@@ -21,7 +21,7 @@ public class PersonControllerTest extends DemoDataDbTest {
     @Test
     void shouldSignUp() {
         var response = restTemplate.exchange(addr + "/person", HttpMethod.POST,
-                new HttpEntity<>(new PersonSignupRequest("usernew", "full name", "pass")),
+                new HttpEntity<>(new PersonSignupTo("usernew", "full name", "pass")),
                 PersonTo.class);
 
         Assertions.assertNotNull(response);
@@ -39,6 +39,21 @@ public class PersonControllerTest extends DemoDataDbTest {
     void shouldGet() {
         var response = restTemplate.exchange(addr + "/person/" + person1.getUsername(),
                 HttpMethod.GET, HttpEntity.EMPTY, PersonTo.class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        PersonTo personToResponse = response.getBody();
+        Assertions.assertNotNull(personToResponse);
+
+        Assertions.assertEquals(personToResponse.username(), person1.getUsername());
+        Assertions.assertEquals(personToResponse.fullName(), person1.getFullName());
+    }
+
+    @Test
+    void shouldGetSelf() {
+        var response = restTemplate.exchange(addr + "/person",
+                HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person1Auth)), PersonTo.class);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());

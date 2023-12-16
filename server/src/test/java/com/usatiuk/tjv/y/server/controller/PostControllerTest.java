@@ -1,6 +1,6 @@
 package com.usatiuk.tjv.y.server.controller;
 
-import com.usatiuk.tjv.y.server.dto.PostCreate;
+import com.usatiuk.tjv.y.server.dto.PostCreateTo;
 import com.usatiuk.tjv.y.server.dto.PostTo;
 import com.usatiuk.tjv.y.server.dto.converters.PostMapper;
 import com.usatiuk.tjv.y.server.repository.PostRepository;
@@ -22,16 +22,16 @@ public class PostControllerTest extends DemoDataDbTest {
     void shouldNotCreatePostWithoutAuth() {
         Long postsBefore = postRepository.count();
         var response = restTemplate.exchange(addr + "/post", HttpMethod.POST,
-                new HttpEntity<>(new PostCreate("test text")), PostTo.class);
+                new HttpEntity<>(new PostCreateTo("test text")), PostTo.class);
 
-        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
 
         Assertions.assertEquals(postRepository.count(), postsBefore);
     }
 
     @Test
     void shouldCreatePost() {
-        var entity = new HttpEntity<>(new PostCreate("test text"), createAuthHeaders(person1Auth));
+        var entity = new HttpEntity<>(new PostCreateTo("test text"), createAuthHeaders(person1Auth));
 
         var response = restTemplate.exchange(addr + "/post", HttpMethod.POST,
                 entity, PostTo.class);

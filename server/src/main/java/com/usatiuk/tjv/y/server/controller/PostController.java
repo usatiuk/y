@@ -1,6 +1,6 @@
 package com.usatiuk.tjv.y.server.controller;
 
-import com.usatiuk.tjv.y.server.dto.PostCreate;
+import com.usatiuk.tjv.y.server.dto.PostCreateTo;
 import com.usatiuk.tjv.y.server.dto.PostTo;
 import com.usatiuk.tjv.y.server.dto.converters.PostMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
@@ -28,10 +28,10 @@ public class PostController {
     }
 
     @PostMapping
-    public PostTo createPost(Principal principal, @RequestBody PostCreate postCreate) {
+    public PostTo createPost(Principal principal, @RequestBody PostCreateTo postCreateTo) {
         Post post = new Post();
         post.setAuthor(entityManager.getReference(Person.class, principal.getName()));
-        post.setText(postCreate.text());
+        post.setText(postCreateTo.text());
         return PostMapper.makeDto(postService.create(post));
     }
 

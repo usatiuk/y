@@ -1,18 +1,33 @@
 package com.usatiuk.tjv.y.server.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.usatiuk.tjv.y.server.dto.ErrorTo;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,14 +38,26 @@ public class WebSecurityConfig {
         this.jwtRequestFilter = jwtRequestFilter;
     }
 
-    @Bean
-    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
-        return new MvcRequestMatcher.Builder(introspector);
+    @Component
+    class ErrorAuthenticationEntryPoint implements AuthenticationEntryPoint {
+        @Override
+        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
+                throws IOException {
+
+            var err = new ErrorTo(List.of("Authentication failed"), HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            OutputStream responseStream = response.getOutputStream();
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(responseStream, err);
+            responseStream.flush();
+        }
     }
 
     @Bean
-    public SecurityFilterChain configure(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
-        return http.cors(withDefaults())
+    public SecurityFilterChain configure(HttpSecurity http, HandlerMappingIntrospector introspector, AuthenticationEntryPoint authenticationEntryPoint) throws Exception {
+        MvcRequestMatcher.Builder mvc = new MvcRequestMatcher.Builder(introspector);
+        return http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/post/*")).permitAll()
@@ -41,7 +68,15 @@ public class WebSecurityConfig {
                         .anyRequest().hasAuthority(UserRoles.ROLE_USER.name()))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(c -> c.authenticationEntryPoint(authenticationEntryPoint))
                 .build();
     }
 
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
+    }
 }
