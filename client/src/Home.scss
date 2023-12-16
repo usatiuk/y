@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: row;
   min-height: 100vh;
+  flex: auto;
 
   #HomeSidebar {
     min-width: 15rem;
@@ -53,7 +54,7 @@
 
   #HomeContent {
     margin: 0;
-    min-width: 100%;
+    width: 100%;
 
   }
 }
