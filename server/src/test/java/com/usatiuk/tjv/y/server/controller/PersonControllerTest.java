@@ -119,4 +119,25 @@ public class PersonControllerTest extends DemoDataDbTest {
         Assertions.assertIterableEquals(Arrays.asList(personToResponse), List.of(PersonMapper.makeDto(person2), PersonMapper.makeDto(person1)));
     }
 
+    @Test
+    void shouldAddFollowing() {
+        var response = restTemplate.exchange(addr + "/person/following/" + person3.getUuid(),
+                HttpMethod.PUT, new HttpEntity<>(createAuthHeaders(person1Auth)), Object.class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        var response2 = restTemplate.exchange(addr + "/person/following",
+                HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person1Auth)), PersonTo[].class);
+
+        Assertions.assertNotNull(response2);
+        Assertions.assertEquals(HttpStatus.OK, response2.getStatusCode());
+
+        var personToResponse = response2.getBody();
+        Assertions.assertNotNull(personToResponse);
+
+        Assertions.assertEquals(1, personToResponse.length);
+        Assertions.assertIterableEquals(Arrays.asList(personToResponse), List.of(PersonMapper.makeDto(person3)));
+    }
+
 }

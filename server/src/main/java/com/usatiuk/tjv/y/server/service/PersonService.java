@@ -17,4 +17,8 @@ public interface PersonService extends CrudService<Person, String> {
     Collection<Person> getFollowers(String uuid) throws UserNotFoundException;
 
     Collection<Person> getFollowing(String uuid) throws UserNotFoundException;
+
+    void addFollower(String follower, String followee) throws UserNotFoundException;
+
+    void removeFollower(String follower, String followee) throws UserNotFoundException;
 }

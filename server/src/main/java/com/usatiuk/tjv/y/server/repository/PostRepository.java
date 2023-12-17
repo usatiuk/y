@@ -12,6 +12,8 @@ import java.util.Collection;
 public interface PostRepository extends PagingAndSortingRepository<Post, Long>, CrudRepository<Post, Long> {
     Collection<Post> findByAuthorUuid(String authorUuid);
 
+    Collection<Post> findByAuthorUsername(String authorUsername);
+
     @Query(value = "SELECT p FROM Post p " +
             "WHERE EXISTS " +
             "(SELECT u FROM Person u LEFT JOIN u.following f where u.uuid = :personUuid and f.uuid = p.author.uuid)")

@@ -1,5 +1,8 @@
 // import { apiRoot } from "~src/env";
 
+import { jwtDecode } from "jwt-decode";
+import { isError, TErrorTo } from "./dto";
+
 const apiRoot: string = "http://localhost:8080";
 
 let token: string | null;
@@ -14,6 +17,12 @@ export function getToken(): string | null {
         token = localStorage.getItem("jwt_token");
     }
     return token;
+}
+
+export function getTokenUserUuid(): string | null {
+    const token = getToken();
+    if (!token) return null;
+    return jwtDecode(token).sub ?? null;
 }
 
 export function deleteToken(): void {

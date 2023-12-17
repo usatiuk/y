@@ -1,4 +1,4 @@
-import { signup } from "./api/Person";
+import { addFollower, removeFollower, signup } from "./api/Person";
 import { ActionFunctionArgs, redirect } from "react-router-dom";
 import { login } from "./api/Token";
 import { isError } from "./api/dto";
@@ -59,5 +59,16 @@ export async function profileSelfAction({ request }: ActionFunctionArgs) {
         return await deletePost(
             parseInt(formData.get("postToDeleteId")!.toString()),
         );
+    }
+}
+
+export async function userListAction({ request }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    const intent = formData.get("intent")!.toString();
+    console.log(intent);
+    if (intent == "follow") {
+        return await addFollower(formData.get("uuid")!.toString());
+    } else if (intent == "unfollow") {
+        return await removeFollower(formData.get("uuid")!.toString());
     }
 }

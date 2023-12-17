@@ -2,22 +2,33 @@ import { useLoaderData } from "react-router-dom";
 import { LoaderToType, userListLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { ProfileCard } from "./ProfileCard";
+import { useHomeContext } from "./HomeContext";
 
 export function UserList() {
     const loaderData = useLoaderData() as LoaderToType<typeof userListLoader>;
+    const homeContext = useHomeContext();
 
-    if (!loaderData || isError(loaderData)) {
+    if (!loaderData) {
         return <div>Error</div>;
     }
 
+    const { people, following } = loaderData;
+    if (isError(following) || isError(people)) {
+        return <div>Error</div>;
+    }
     return (
         <div>
-            {loaderData.map((u) => {
+            {people.map((u) => {
                 return (
                     <ProfileCard
                         username={u.username}
                         fullName={u.fullName}
+                        uuid={u.uuid}
                         key={u.uuid}
+                        actions={homeContext.user.uuid != u.uuid}
+                        alreadyFollowing={following.some(
+                            (f) => f.uuid == u.uuid,
+                        )}
                     />
                 );
             })}

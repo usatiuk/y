@@ -10,7 +10,12 @@ import { deleteToken, getToken } from "./api/utils";
 import { Login } from "./Login";
 import { Signup } from "./Signup";
 import { Home } from "./Home";
-import { loginAction, profileSelfAction, signupAction } from "./actions";
+import {
+    loginAction,
+    profileSelfAction,
+    signupAction,
+    userListAction,
+} from "./actions";
 import { homeLoader, profileLoader, userListLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { Feed } from "./Feed";
@@ -39,7 +44,12 @@ const router = createBrowserRouter([
         children: [
             { path: "feed", element: <Feed /> },
             { path: "messages", element: <Messages /> },
-            { path: "users", element: <UserList />, loader: userListLoader },
+            {
+                path: "users",
+                element: <UserList />,
+                loader: userListLoader,
+                action: userListAction,
+            },
             {
                 path: "profile",
                 loader: profileLoader,

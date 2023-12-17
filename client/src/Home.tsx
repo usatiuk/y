@@ -3,6 +3,7 @@ import { homeLoader, LoaderToType } from "./loaders";
 import { isError } from "./api/dto";
 
 import "./Home.scss";
+import { HomeContextType } from "./HomeContext";
 
 export function Home() {
     const loaderData = useLoaderData() as LoaderToType<typeof homeLoader>;
@@ -42,7 +43,9 @@ export function Home() {
                 </div>
             </div>
             <div id="HomeContent">
-                <Outlet />
+                <Outlet
+                    context={{ user: loaderData } satisfies HomeContextType}
+                />
             </div>
         </div>
     );

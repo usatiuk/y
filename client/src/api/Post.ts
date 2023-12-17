@@ -17,6 +17,22 @@ export async function deletePost(id: number): Promise<TNoContentToResp> {
     return fetchJSONAuth(`/post/${id.toString()}`, "DELETE", NoContentToResp);
 }
 
-export async function getPosts(author: string): Promise<TPostToArrResp> {
-    return fetchJSONAuth(`/post?author=${author}`, "GET", PostToArrResp);
+export async function getPostsByAuthorUuid(
+    author: string,
+): Promise<TPostToArrResp> {
+    return fetchJSONAuth(
+        `/post/by-author-uuid?author=${author}`,
+        "GET",
+        PostToArrResp,
+    );
+}
+
+export async function getPostsByAuthorUsername(
+    author: string,
+): Promise<TPostToArrResp> {
+    return fetchJSONAuth(
+        `/post/by-author-username?author=${author}`,
+        "GET",
+        PostToArrResp,
+    );
 }

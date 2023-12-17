@@ -36,8 +36,16 @@ public class PostController {
         return PostMapper.makeDto(postService.create(post));
     }
 
-    @GetMapping
-    public Stream<PostTo> readAllByAuthor(@RequestParam Optional<String> author) {
+    @GetMapping(path = "/by-author-uuid")
+    public Stream<PostTo> readAllByAuthorUuid(@RequestParam Optional<String> author) {
+        if (author.isPresent())
+            return postService.readByAuthorId(author.get()).stream().map(PostMapper::makeDto);
+        else
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping(path = "/by-author-username")
+    public Stream<PostTo> readAllByAuthorUsername(@RequestParam Optional<String> author) {
         if (author.isPresent())
             return postService.readByAuthorId(author.get()).stream().map(PostMapper::makeDto);
         else

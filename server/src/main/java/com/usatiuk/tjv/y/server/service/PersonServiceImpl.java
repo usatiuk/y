@@ -4,6 +4,7 @@ import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
 import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
+import jakarta.persistence.EntityManager;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,13 @@ import java.util.Optional;
 public class PersonServiceImpl extends CrudServiceImpl<Person, String> implements PersonService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EntityManager entityManager;
 
     public PersonServiceImpl(PersonRepository personRepository,
-                             PasswordEncoder passwordEncoder) {
+                             PasswordEncoder passwordEncoder, EntityManager entityManager) {
         this.personRepository = personRepository;
         this.passwordEncoder = passwordEncoder;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -58,5 +61,19 @@ public class PersonServiceImpl extends CrudServiceImpl<Person, String> implement
     @Override
     public Collection<Person> getFollowing(String uuid) throws UserNotFoundException {
         return personRepository.findById(uuid).orElseThrow(UserNotFoundException::new).getFollowing();
+    }
+
+    @Override
+    public void addFollower(String follower, String followee) throws UserNotFoundException {
+        var person = personRepository.findById(follower).orElseThrow(UserNotFoundException::new);
+        person.getFollowing().add(entityManager.getReference(Person.class, followee));
+        personRepository.save(person);
+    }
+
+    @Override
+    public void removeFollower(String follower, String followee) throws UserNotFoundException {
+        var person = personRepository.findById(follower).orElseThrow(UserNotFoundException::new);
+        person.getFollowing().remove(entityManager.getReference(Person.class, followee));
+        personRepository.save(person);
     }
 }

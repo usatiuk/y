@@ -3,6 +3,7 @@ import { Form, Link, useLoaderData } from "react-router-dom";
 import { LoaderToType, profileLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { Post } from "./Post";
+import { useHomeContext } from "./HomeContext";
 
 export interface IProfileProps {
     self: boolean;
@@ -10,6 +11,8 @@ export interface IProfileProps {
 
 export function Profile({ self }: IProfileProps) {
     const loaderData = useLoaderData() as LoaderToType<typeof profileLoader>;
+
+    const homeContext = useHomeContext();
 
     if (!loaderData || isError(loaderData)) {
         return <div>Error</div>;
@@ -22,8 +25,8 @@ export function Profile({ self }: IProfileProps) {
     return (
         <div className={"profileView"}>
             <div className={"profileInfo"}>
-                <span className={"fullName"}>{loaderData.user.fullName}</span>
-                <span className={"username"}>{loaderData.user.fullName}</span>
+                <span className={"fullName"}>{homeContext.user.fullName}</span>
+                <span className={"username"}>{homeContext.user.fullName}</span>
             </div>
             {self && (
                 <div className={"newPost"}>

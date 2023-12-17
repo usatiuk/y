@@ -1,8 +1,13 @@
-import { getAllPerson, getPersonByUsername, getSelf } from "./api/Person";
-import { deleteToken, getToken } from "./api/utils";
+import {
+    getAllPerson,
+    getFollowing,
+    getPersonByUsername,
+    getSelf,
+} from "./api/Person";
+import { deleteToken, getToken, getTokenUserUuid } from "./api/utils";
 import { redirect } from "react-router-dom";
 import { isError } from "./api/dto";
-import { getPosts } from "./api/Post";
+import { getPostsByAuthorUsername, getPostsByAuthorUuid } from "./api/Post";
 
 export type LoaderToType<T extends (...args: any) => any> =
     | Exclude<Awaited<ReturnType<T>>, Response>
@@ -25,7 +30,7 @@ export async function homeLoader() {
 }
 
 export async function userListLoader() {
-    return await getAllPerson();
+    return { people: await getAllPerson(), following: await getFollowing() };
 }
 
 export async function profileLoader({
@@ -33,27 +38,31 @@ export async function profileLoader({
 }: {
     params: { username?: string };
 }) {
-    const self = await getCheckUserSelf();
-    if (!self || self instanceof Response || isError(self)) {
-        return self;
-    }
-
-    if (self.username == params.username) {
+    const selfUuid = getTokenUserUuid();
+    if (!selfUuid) return redirect("/");
+    if (selfUuid == params.username) {
         return redirect("/home/profile");
     }
 
-    const user = params.username
-        ? await getPersonByUsername(params.username)
-        : self;
-    if (!user || user instanceof Response || isError(user)) {
-        return user;
-    }
+    const posts = params.username
+        ? await getPostsByAuthorUsername(params.username)
+        : await getPostsByAuthorUuid(selfUuid);
 
-    const posts = await getPosts(user.uuid);
+    const retUser = params.username
+        ? await getPersonByUsername(params.username)
+        : null;
+
+    if (
+        (params.username && !retUser) ||
+        retUser instanceof Response ||
+        isError(retUser)
+    ) {
+        return retUser;
+    }
 
     if (isError(posts)) {
-        return { user, posts: null };
+        return { user: retUser, posts: null };
     }
 
-    return { user, posts };
+    return { user: retUser, posts };
 }

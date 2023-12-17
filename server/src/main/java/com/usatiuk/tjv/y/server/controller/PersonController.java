@@ -7,6 +7,7 @@ import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.service.PersonService;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
 import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,6 +78,18 @@ public class PersonController {
     @GetMapping(path = "/following")
     public Stream<PersonTo> getFollowing(Principal principal) throws UserNotFoundException {
         return personService.getFollowing(principal.getName()).stream().map(PersonMapper::makeDto);
+    }
+
+    @PutMapping(path = "/following/{uuid}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addFollowing(Principal principal, @PathVariable String uuid) throws UserNotFoundException {
+        personService.addFollower(principal.getName(), uuid);
+    }
+
+    @DeleteMapping(path = "/following/{uuid}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFollowing(Principal principal, @PathVariable String uuid) throws UserNotFoundException {
+        personService.removeFollower(principal.getName(), uuid);
     }
 
 }
