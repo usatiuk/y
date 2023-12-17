@@ -23,10 +23,24 @@
     .info {
       flex-grow: 1;
       align-self: start;
+
+      > * {
+        margin-left: 0.5rem;
+      }
+
+      > *:first-child {
+        margin-left: 0;
+      }
+
+      a {
+        color: inherit;
+
+      }
     }
 
     .actions {
       align-self: end;
+
       button {
         background: none;
         border: none;

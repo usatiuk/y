@@ -20,6 +20,7 @@ export function PostList({
                             createdDate={`${date.toUTCString()}`}
                             key={p.id}
                             id={p.id}
+                            authorUsername={p.authorUsername}
                             actions={selfUuid == p.authorUuid}
                         />
                     );
