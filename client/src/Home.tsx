@@ -1,4 +1,10 @@
-import { NavLink, NavLinkProps, Outlet, useLoaderData } from "react-router-dom";
+import {
+    Form,
+    NavLink,
+    NavLinkProps,
+    Outlet,
+    useLoaderData,
+} from "react-router-dom";
 import { homeLoader, LoaderToType } from "./loaders";
 import { isError } from "./api/dto";
 
@@ -26,6 +32,16 @@ export function Home() {
                 <div id="SidebarUserInfo">
                     <a> username: {loaderData.username}</a>
                     <a>name: {loaderData.fullName}</a>
+                    {/*method post for everything to reload*/}
+                    <Form method={"post"}>
+                        <button
+                            type={"submit"}
+                            name={"intent"}
+                            value={"logout"}
+                        >
+                            logout
+                        </button>
+                    </Form>
                 </div>
                 <div id="SidebarNav">
                     <NavLink to={"feed"} className={activePendingClassName}>

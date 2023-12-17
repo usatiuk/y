@@ -2,14 +2,38 @@
   width: 15rem;
   height: 5rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   border: 1px solid #EFEFEF;
   border-radius: 7px;
   padding: 1rem;
-  .fullName{
-    font-size: 1.3rem;
-  }
-  .username{
+flex: auto;
 
+  .profileInfo {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    a {
+      text-decoration: none;
+      color: black;
+    }
+
+    .fullName{
+      font-size: 1.3rem;
+    }
+    .username{
+
+    }
+  }
+
+  .profileActions {
+    button {
+      background: none;
+      border: none;
+      padding: 0;
+      text-decoration: none;
+      cursor: pointer;
+      color: inherit;
+      font-size: 0.8rem;
+    }
   }
 }

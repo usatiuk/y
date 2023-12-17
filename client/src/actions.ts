@@ -2,7 +2,7 @@ import { addFollower, removeFollower, signup } from "./api/Person";
 import { ActionFunctionArgs, redirect } from "react-router-dom";
 import { login } from "./api/Token";
 import { isError } from "./api/dto";
-import { setToken } from "./api/utils";
+import { deleteToken, setToken } from "./api/utils";
 import { createPost, deletePost } from "./api/Post";
 
 export type ActionToType<T extends (...args: any) => any> =
@@ -62,10 +62,18 @@ export async function profileSelfAction({ request }: ActionFunctionArgs) {
     }
 }
 
+export async function homeAction({ request }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    const intent = formData.get("intent")!.toString();
+    if (intent == "logout") {
+        deleteToken();
+        return redirect("/");
+    }
+}
+
 export async function userListAction({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
     const intent = formData.get("intent")!.toString();
-    console.log(intent);
     if (intent == "follow") {
         return await addFollower(formData.get("uuid")!.toString());
     } else if (intent == "unfollow") {

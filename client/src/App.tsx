@@ -11,6 +11,7 @@ import { Login } from "./Login";
 import { Signup } from "./Signup";
 import { Home } from "./Home";
 import {
+    homeAction,
     loginAction,
     profileSelfAction,
     signupAction,
@@ -42,9 +43,8 @@ const router = createBrowserRouter([
     },
     {
         path: "/home",
-        loader: async () => {
-            return await homeLoader();
-        },
+        loader: homeLoader,
+        action: homeAction,
         element: <Home />,
         children: [
             { path: "feed", element: <Feed />, loader: feedLoader },

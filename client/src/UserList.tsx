@@ -4,6 +4,8 @@ import { isError } from "./api/dto";
 import { ProfileCard } from "./ProfileCard";
 import { useHomeContext } from "./HomeContext";
 
+import "./UserList.scss";
+
 export function UserList() {
     const loaderData = useLoaderData() as LoaderToType<typeof userListLoader>;
     const homeContext = useHomeContext();
@@ -17,7 +19,7 @@ export function UserList() {
         return <div>Error</div>;
     }
     return (
-        <div>
+        <div className={"userList"}>
             {people.map((u) => {
                 return (
                     <ProfileCard
