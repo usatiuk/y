@@ -50,15 +50,15 @@
         font-size: 1.15rem;
 
         border-radius: 7px;
-        border: 1px solid #F0F0F0;
+        border: 1px solid #E0E0E0;
+        box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.05), 2px 2px 0px 0px rgba(0, 0, 0, 0.025);
 
         &.active {
           background-color: #EFEFEF;
         }
 
         &.pending {
-          color: gray;
-          background-color: #FFFFFF;
+          background-color: #EEEEEE;
         }
 
       }
