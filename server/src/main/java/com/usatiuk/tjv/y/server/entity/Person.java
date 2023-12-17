@@ -37,6 +37,9 @@ public class Person implements EntityWithId<String> {
     @OneToMany(mappedBy = "author")
     private Collection<Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author")
+    private Collection<Message> messages = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(name = "user_follows",
             joinColumns = @JoinColumn(name = "follower"),
@@ -45,6 +48,12 @@ public class Person implements EntityWithId<String> {
 
     @ManyToMany(mappedBy = "following")
     private Collection<Person> followers;
+
+    @ManyToMany
+    @JoinTable(name = "user_chat",
+            joinColumns = @JoinColumn(name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "chat"))
+    private Collection<Chat> chats;
 
     @Override
     public String getId() {
