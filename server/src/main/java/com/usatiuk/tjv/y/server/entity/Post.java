@@ -1,9 +1,6 @@
 package com.usatiuk.tjv.y.server.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +26,7 @@ public class Post implements EntityWithId<Long> {
     private Person author;
 
     @NotBlank
+    @Lob
     private String text;
 
     @CreationTimestamp
