@@ -6,10 +6,14 @@
 
   #HomeSidebar {
     min-width: 15rem;
+    max-width: 15rem;
     min-height: 100vh;
     border-right: solid gray 1px;
-    border-radius: 7px;
+    border-bottom-right-radius: 7px;
     padding: 2rem 1rem;
+    position: fixed;
+    top: 0;
+    box-shadow: 1px 0px 0px 0px rgba(0, 0, 0, 0.2), 2px 0px 0px 0px rgba(0, 0, 0, 0.1), 3px 0px 0px 0px rgba(0, 0, 0, 0.05);
 
     #SidebarUserInfo {
       display: flex;
@@ -63,8 +67,7 @@
   }
 
   #HomeContent {
-    margin: 0;
     width: 100%;
-
+    margin: 0 0 0 15rem;
   }
 }
