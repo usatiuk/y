@@ -1,26 +1,30 @@
+@import "./common";
+
 .profileCard {
   width: 15rem;
   height: 5rem;
   display: flex;
   flex-direction: row;
-  border: 1px solid #EFEFEF;
-  border-radius: 7px;
   padding: 1rem;
-flex: auto;
+  flex: auto;
+
+  @include border-shadow;
 
   .profileInfo {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+
     a {
       text-decoration: none;
       color: black;
     }
 
-    .fullName{
+    .fullName {
       font-size: 1.3rem;
     }
-    .username{
+
+    .username {
 
     }
   }

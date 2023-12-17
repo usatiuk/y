@@ -1,3 +1,5 @@
+@import "./common";
+
 .post {
   display: flex;
   flex-direction: column;
@@ -8,15 +10,14 @@
   margin: 1rem 0;
   min-height: 3rem;
 
+  @include border-shadow;
+
   &.postEditing {
     padding: 0;
-
-    &:focus-within {
-      border-color: mediumpurple;
-      outline: solid mediumpurple 2px;
-    }
-
     min-height: 6rem;
+    border: 1px solid #D0D0D0;
+
+    @include post-editor;
   }
 
   .text {
@@ -25,6 +26,7 @@
 
   .footer {
     margin-top: 0.3rem;
+    margin-bottom: -0.3rem;
     font-size: 0.7rem;
     color: #A0A0A0;
 

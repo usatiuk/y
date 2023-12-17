@@ -1,0 +1,26 @@
+@mixin border-shadow {
+  border-radius: 7px;
+  border: 1px solid #E0E0E0;
+  box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.05), 2px 2px 0px 0px rgba(0, 0, 0, 0.025);
+}
+
+@mixin post-editor {
+  background-color: #E0E0E0;
+  button {
+    background-color: #E0E0E0;
+    cursor: pointer;
+    margin: 0;
+    padding: 0.5rem;
+    color: black;
+    font-family: inherit;
+  }
+  textarea {
+    background-color: white;
+    font-family: inherit;
+    font-size: inherit;
+  }
+  &:focus-within {
+    border-color: mediumpurple;
+    outline: solid mediumpurple 2px;
+  }
+}
