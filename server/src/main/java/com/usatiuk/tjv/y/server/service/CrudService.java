@@ -12,7 +12,7 @@ public interface CrudService<T extends EntityWithId<ID>, ID extends Serializable
 
     Iterable<T> readAll();
 
-    void update(ID id, T e);
+    void update(T e);
 
     void deleteById(ID id);
 }

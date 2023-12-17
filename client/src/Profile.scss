@@ -37,30 +37,6 @@
       outline: solid mediumpurple 2px;
     }
 
-    form {
-      min-height: 100%;
-      display: flex;
-      flex-direction: row;
-      flex: auto;
-
-      textarea {
-        flex-grow: 1;
-        border: 0px;
-        border-radius: 7px 0 0 7px;
-        padding: 7px;
-        resize: none;
-
-        &:focus {
-          outline: none;
-        }
-      }
-
-      button {
-        border: 0px;
-        border-radius: 0 7px 7px 0;
-      }
-
-    }
   }
 
   .posts {

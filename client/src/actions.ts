@@ -3,7 +3,7 @@ import { ActionFunctionArgs, redirect } from "react-router-dom";
 import { login } from "./api/Token";
 import { isError } from "./api/dto";
 import { deleteToken, setToken } from "./api/utils";
-import { createPost, deletePost } from "./api/Post";
+import { createPost, deletePost, updatePost } from "./api/Post";
 
 export type ActionToType<T extends (...args: any) => any> =
     | Exclude<Awaited<ReturnType<T>>, Response>
@@ -58,6 +58,11 @@ export async function profileSelfAction({ request }: ActionFunctionArgs) {
     } else if (intent == "deletePost") {
         return await deletePost(
             parseInt(formData.get("postToDeleteId")!.toString()),
+        );
+    } else if (intent == "updatePost") {
+        return await updatePost(
+            formData.get("text")!.toString(),
+            parseInt(formData.get("postId")!.toString()),
         );
     }
 }

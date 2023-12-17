@@ -14,6 +14,14 @@ export async function createPost(text: string): Promise<TPostToResp> {
     });
 }
 
+export async function updatePost(
+    text: string,
+    postId: number,
+): Promise<TPostToResp> {
+    return fetchJSONAuth("/post/" + postId, "PATCH", PostToResp, {
+        text,
+    });
+}
 export async function deletePost(id: number): Promise<TNoContentToResp> {
     return fetchJSONAuth(`/post/${id.toString()}`, "DELETE", NoContentToResp);
 }

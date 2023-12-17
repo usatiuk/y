@@ -6,6 +6,17 @@
   padding: 7px;
   resize: none;
   margin: 1rem 0;
+  transition: height 0.5s;
+
+  &.postEditing {
+    padding: 0;
+    &:focus-within {
+      border-color: mediumpurple;
+      outline: solid mediumpurple 2px;
+    }
+    height: 6rem;
+    transition: height 0.5s;
+  }
 
   .text {
     word-wrap: anywhere;
@@ -39,7 +50,17 @@
     }
 
     .actions {
+      display: flex;
       align-self: end;
+
+      > * {
+        margin-left: 0.5rem;
+      }
+
+      > *:first-child {
+        margin-left: 0;
+      }
+
 
       button {
         background: none;

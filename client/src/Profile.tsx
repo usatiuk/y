@@ -1,10 +1,12 @@
-import "./Profile.scss";
 import { Form, Link, useLoaderData } from "react-router-dom";
 import { LoaderToType, profileLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { Post } from "./Post";
 import { useHomeContext } from "./HomeContext";
 import { PostList } from "./PostList";
+
+import "./PostForm.scss";
+import "./Profile.scss";
 
 export interface IProfileProps {
     self: boolean;
@@ -35,7 +37,7 @@ export function Profile({ self }: IProfileProps) {
             </div>
             {self && (
                 <div className={"newPost"}>
-                    <Form method="post">
+                    <Form className={"postForm"} method="post">
                         <textarea
                             placeholder={"Write something!"}
                             name="text"

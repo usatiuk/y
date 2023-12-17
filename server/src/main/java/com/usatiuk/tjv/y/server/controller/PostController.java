@@ -64,6 +64,15 @@ public class PostController {
         return PostMapper.makeDto(post.get());
     }
 
+    @PatchMapping(path = "/{id}")
+    public PostTo update(Principal principal, @PathVariable long id, @RequestBody PostCreateTo postCreateTo) {
+        var post = postService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (!Objects.equals(post.getAuthor().getUuid(), principal.getName()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        post.setText(postCreateTo.text());
+        postService.update(post);
+        return PostMapper.makeDto(post);
+    }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

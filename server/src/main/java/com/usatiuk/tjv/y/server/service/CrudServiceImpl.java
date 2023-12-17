@@ -27,8 +27,8 @@ public abstract class CrudServiceImpl<T extends EntityWithId<ID>, ID extends Ser
     }
 
     @Override
-    public void update(ID id, T e) {
-
+    public void update(T e) {
+        getRepository().save(e);
     }
 
     @Override
