@@ -75,7 +75,7 @@ public class PostControllerTest extends DemoDataDbTest {
 
     @Test
     void shouldGetPostsByFollowees() {
-        var response = restTemplate.exchange(addr + "/post/following",
+        var response = restTemplate.exchange(addr + "/post/by-following",
                 HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person3Auth)), PostTo[].class);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());

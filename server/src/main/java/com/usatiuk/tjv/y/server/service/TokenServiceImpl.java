@@ -23,7 +23,7 @@ public class TokenServiceImpl implements TokenService {
 
     public TokenServiceImpl(@Value("${jwt.secret}") String secret) {
         // FIXME:
-        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(Encoders.BASE64.encode(secret.getBytes())));
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     @Override
