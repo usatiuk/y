@@ -32,6 +32,11 @@
     border: solid gray 1px;
     border-radius: 7px;
 
+    &:focus-within {
+      border-color: mediumpurple;
+      outline: solid mediumpurple 2px;
+    }
+
     form {
       min-height: 100%;
       display: flex;
@@ -44,6 +49,10 @@
         border-radius: 7px 0 0 7px;
         padding: 7px;
         resize: none;
+
+        &:focus {
+          outline: none;
+        }
       }
 
       button {
