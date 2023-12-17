@@ -19,11 +19,19 @@ export function Profile({ self }: IProfileProps) {
         return <div>Error</div>;
     }
 
+    const { posts } = loaderData;
+
+    const user = self ? homeContext.user : loaderData.user;
+
+    if (!user || isError(user)) {
+        return <div>Error</div>;
+    }
+
     return (
         <div className={"profileView"}>
             <div className={"profileInfo"}>
-                <span className={"fullName"}>{homeContext.user.fullName}</span>
-                <span className={"username"}>{homeContext.user.fullName}</span>
+                <span className={"fullName"}>{user.fullName}</span>
+                <span className={"username"}>{user.username}</span>
             </div>
             {self && (
                 <div className={"newPost"}>
@@ -38,10 +46,7 @@ export function Profile({ self }: IProfileProps) {
                     </Form>
                 </div>
             )}
-            <PostList
-                posts={loaderData.posts}
-                selfUuid={homeContext.user.uuid}
-            />
+            <PostList posts={posts} selfUuid={homeContext.user.uuid} />
         </div>
     );
 }
