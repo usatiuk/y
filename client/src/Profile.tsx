@@ -1,4 +1,4 @@
-import { Form, Link, useLoaderData } from "react-router-dom";
+import { Form, Link, useLoaderData, useNavigation } from "react-router-dom";
 import { LoaderToType, profileLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { Post } from "./Post";
@@ -28,6 +28,8 @@ export function Profile({ self }: IProfileProps) {
     if (!user || isError(user)) {
         return <div>Error</div>;
     }
+    const navigation = useNavigation();
+    const busy = navigation.state === "submitting";
 
     return (
         <div className={"profileView"}>
@@ -42,7 +44,12 @@ export function Profile({ self }: IProfileProps) {
                             placeholder={"Write something!"}
                             name="text"
                         />
-                        <button name="intent" value="post" type="submit">
+                        <button
+                            name="intent"
+                            value="post"
+                            type="submit"
+                            disabled={busy}
+                        >
                             Post
                         </button>
                     </Form>

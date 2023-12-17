@@ -1,5 +1,5 @@
 import "./Post.scss";
-import { Form, Link, useSubmit } from "react-router-dom";
+import { Form, Link, useNavigation, useSubmit } from "react-router-dom";
 import { useState } from "react";
 
 import "./PostForm.scss";
@@ -19,6 +19,8 @@ export function Post({
 }) {
     const [editing, setEditing] = useState(false);
     const submit = useSubmit();
+    const navigation = useNavigation();
+    const busy = navigation.state === "submitting";
 
     if (editing) {
         return (
@@ -38,6 +40,7 @@ export function Post({
                             setEditing(false);
                             submit(e.currentTarget);
                         }}
+                        disabled={busy}
                     >
                         save
                     </button>
@@ -72,6 +75,7 @@ export function Post({
                                 name="intent"
                                 value="deletePost"
                                 type={"submit"}
+                                disabled={busy}
                             >
                                 delete
                             </button>

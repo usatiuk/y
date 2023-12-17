@@ -1,5 +1,5 @@
 import "./ProfileCard.scss";
-import { Form, Link } from "react-router-dom";
+import { Form, Link, useNavigation } from "react-router-dom";
 
 export function ProfileCard({
     username,
@@ -14,6 +14,9 @@ export function ProfileCard({
     actions: boolean;
     alreadyFollowing: boolean;
 }) {
+    const navigation = useNavigation();
+    const busy = navigation.state === "submitting";
+
     return (
         <div className={"profileCard"}>
             <div className={"profileInfo"}>
@@ -33,6 +36,7 @@ export function ProfileCard({
                                 type={"submit"}
                                 name={"intent"}
                                 value={"unfollow"}
+                                disabled={busy}
                             >
                                 unfollow
                             </button>
@@ -44,6 +48,7 @@ export function ProfileCard({
                                 type={"submit"}
                                 name={"intent"}
                                 value={"follow"}
+                                disabled={busy}
                             >
                                 follow
                             </button>
