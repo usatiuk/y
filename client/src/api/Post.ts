@@ -13,6 +13,7 @@ export async function createPost(text: string): Promise<TPostToResp> {
         text,
     });
 }
+
 export async function deletePost(id: number): Promise<TNoContentToResp> {
     return fetchJSONAuth(`/post/${id.toString()}`, "DELETE", NoContentToResp);
 }
@@ -25,6 +26,10 @@ export async function getPostsByAuthorUuid(
         "GET",
         PostToArrResp,
     );
+}
+
+export async function getPostsByFollowees(): Promise<TPostToArrResp> {
+    return fetchJSONAuth(`/post/by-following`, "GET", PostToArrResp);
 }
 
 export async function getPostsByAuthorUsername(

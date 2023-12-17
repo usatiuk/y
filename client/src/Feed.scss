@@ -1,0 +1,9 @@
+.feedView {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .posts {
+    padding: 2.5rem 2rem 0;
+  }
+}

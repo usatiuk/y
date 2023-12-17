@@ -7,7 +7,11 @@ import {
 import { deleteToken, getToken, getTokenUserUuid } from "./api/utils";
 import { redirect } from "react-router-dom";
 import { isError } from "./api/dto";
-import { getPostsByAuthorUsername, getPostsByAuthorUuid } from "./api/Post";
+import {
+    getPostsByAuthorUsername,
+    getPostsByAuthorUuid,
+    getPostsByFollowees,
+} from "./api/Post";
 
 export type LoaderToType<T extends (...args: any) => any> =
     | Exclude<Awaited<ReturnType<T>>, Response>
@@ -40,17 +44,18 @@ export async function profileLoader({
 }) {
     const selfUuid = getTokenUserUuid();
     if (!selfUuid) return redirect("/");
-    if (selfUuid == params.username) {
+
+    const retUser = params.username
+        ? await getPersonByUsername(params.username)
+        : null;
+
+    if (retUser && !isError(retUser) && retUser.uuid == selfUuid) {
         return redirect("/home/profile");
     }
 
     const posts = params.username
         ? await getPostsByAuthorUsername(params.username)
         : await getPostsByAuthorUuid(selfUuid);
-
-    const retUser = params.username
-        ? await getPersonByUsername(params.username)
-        : null;
 
     if (
         (params.username && !retUser) ||
@@ -65,4 +70,8 @@ export async function profileLoader({
     }
 
     return { user: retUser, posts };
+}
+
+export async function feedLoader() {
+    return await getPostsByFollowees();
 }

@@ -47,12 +47,12 @@ public class PostController {
     @GetMapping(path = "/by-author-username")
     public Stream<PostTo> readAllByAuthorUsername(@RequestParam Optional<String> author) {
         if (author.isPresent())
-            return postService.readByAuthorId(author.get()).stream().map(PostMapper::makeDto);
+            return postService.readByAuthorUsername(author.get()).stream().map(PostMapper::makeDto);
         else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping(path = "/following")
+    @GetMapping(path = "/by-following")
     public Stream<PostTo> readAllByFollowees(Principal principal) {
         return postService.readByPersonFollowees(principal.getName()).stream().map(PostMapper::makeDto);
     }

@@ -4,6 +4,7 @@ import { LoaderToType, profileLoader } from "./loaders";
 import { isError } from "./api/dto";
 import { Post } from "./Post";
 import { useHomeContext } from "./HomeContext";
+import { PostList } from "./PostList";
 
 export interface IProfileProps {
     self: boolean;
@@ -17,10 +18,6 @@ export function Profile({ self }: IProfileProps) {
     if (!loaderData || isError(loaderData)) {
         return <div>Error</div>;
     }
-
-    const sortedPosts = loaderData.posts?.sort(
-        (a, b) => b.createdAt - a.createdAt,
-    );
 
     return (
         <div className={"profileView"}>
@@ -41,21 +38,10 @@ export function Profile({ self }: IProfileProps) {
                     </Form>
                 </div>
             )}
-            <div className={"posts"}>
-                {sortedPosts &&
-                    sortedPosts.map((p) => {
-                        const date = new Date(p.createdAt * 1000);
-                        return (
-                            <Post
-                                text={p.text}
-                                createdDate={`${date.toUTCString()}`}
-                                key={p.id}
-                                id={p.id}
-                                actions={self}
-                            />
-                        );
-                    })}
-            </div>
+            <PostList
+                posts={loaderData.posts}
+                selfUuid={homeContext.user.uuid}
+            />
         </div>
     );
 }

@@ -16,7 +16,12 @@ import {
     signupAction,
     userListAction,
 } from "./actions";
-import { homeLoader, profileLoader, userListLoader } from "./loaders";
+import {
+    feedLoader,
+    homeLoader,
+    profileLoader,
+    userListLoader,
+} from "./loaders";
 import { isError } from "./api/dto";
 import { Feed } from "./Feed";
 import { Messages } from "./Messages";
@@ -42,7 +47,7 @@ const router = createBrowserRouter([
         },
         element: <Home />,
         children: [
-            { path: "feed", element: <Feed /> },
+            { path: "feed", element: <Feed />, loader: feedLoader },
             { path: "messages", element: <Messages /> },
             {
                 path: "users",
