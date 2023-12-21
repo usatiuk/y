@@ -1,7 +1,6 @@
-import { Form, Link, useLoaderData, useNavigation } from "react-router-dom";
+import { Form, useLoaderData, useNavigation } from "react-router-dom";
 import { LoaderToType, profileLoader } from "./loaders";
 import { isError } from "./api/dto";
-import { Post } from "./Post";
 import { useHomeContext } from "./HomeContext";
 import { PostList } from "./PostList";
 

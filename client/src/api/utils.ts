@@ -1,7 +1,6 @@
 // import { apiRoot } from "~src/env";
 
 import { jwtDecode } from "jwt-decode";
-import { isError, TErrorTo } from "./dto";
 
 const apiRoot: string = "http://localhost:8080";
 

@@ -1,10 +1,4 @@
-import {
-    Form,
-    NavLink,
-    NavLinkProps,
-    Outlet,
-    useLoaderData,
-} from "react-router-dom";
+import { Form, NavLink, Outlet, useLoaderData } from "react-router-dom";
 import { homeLoader, LoaderToType } from "./loaders";
 import { isError } from "./api/dto";
 

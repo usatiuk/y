@@ -22,6 +22,7 @@ export async function updatePost(
         text,
     });
 }
+
 export async function deletePost(id: number): Promise<TNoContentToResp> {
     return fetchJSONAuth(`/post/${id.toString()}`, "DELETE", NoContentToResp);
 }

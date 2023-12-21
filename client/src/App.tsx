@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import "./App.scss";
-import { deleteToken, getToken } from "./api/utils";
+import { getToken } from "./api/utils";
 import { Login } from "./Login";
 import { Signup } from "./Signup";
 import { Home } from "./Home";
@@ -23,12 +23,10 @@ import {
     profileLoader,
     userListLoader,
 } from "./loaders";
-import { isError } from "./api/dto";
 import { Feed } from "./Feed";
 import { Messages } from "./Messages";
 import { Profile } from "./Profile";
 import { UserList } from "./UserList";
-import { getAllPerson } from "./api/Person";
 
 const router = createBrowserRouter([
     {
