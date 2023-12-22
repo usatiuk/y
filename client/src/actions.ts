@@ -2,8 +2,9 @@ import { addFollower, removeFollower, signup } from "./api/Person";
 import { ActionFunctionArgs, redirect } from "react-router-dom";
 import { login } from "./api/Token";
 import { isError } from "./api/dto";
-import { deleteToken, setToken } from "./api/utils";
+import { deleteToken, getTokenUserUuid, setToken } from "./api/utils";
 import { createPost, deletePost, updatePost } from "./api/Post";
+import { createChat } from "./api/Chat";
 
 export type ActionToType<T extends (...args: any) => any> =
     | Exclude<Awaited<ReturnType<T>>, Response>
@@ -84,4 +85,12 @@ export async function userListAction({ request }: ActionFunctionArgs) {
     } else if (intent == "unfollow") {
         return await removeFollower(formData.get("uuid")!.toString());
     }
+}
+
+export async function newChatAction({ request }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    return await createChat(formData.get("name")!.toString(), [
+        ...formData.getAll("members")!.map((p) => p.toString()),
+        getTokenUserUuid()!,
+    ]);
 }

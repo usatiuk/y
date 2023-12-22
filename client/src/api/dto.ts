@@ -1,10 +1,14 @@
-import { z } from "zod";
+import { number, z } from "zod";
 
 export const ErrorTo = z.object({
     errors: z.array(z.string()),
     code: z.number(),
 });
 export type TErrorTo = z.infer<typeof ErrorTo>;
+
+export function isError(value: unknown): value is TErrorTo {
+    return ErrorTo.safeParse(value).success;
+}
 
 function CreateAPIResponse<T extends z.ZodTypeAny>(obj: T) {
     return z.union([ErrorTo, obj]);
@@ -71,6 +75,28 @@ export type TPostToResp = z.infer<typeof PostToResp>;
 export const PostToArrResp = CreateAPIResponse(PostToArr);
 export type TPostToArrResp = z.infer<typeof PostToArrResp>;
 
-export function isError(value: unknown): value is TErrorTo {
-    return ErrorTo.safeParse(value).success;
-}
+export const MessageTo = z.object({
+    id: number(),
+    chatId: z.number(),
+    authorUuid: z.string(),
+    contents: z.string(),
+});
+export type TMessageTo = z.infer<typeof MessageTo>;
+
+export const MessageToResp = CreateAPIResponse(MessageTo);
+export type TMessageToResp = z.infer<typeof MessageToResp>;
+
+export const ChatTo = z.object({
+    id: z.number(),
+    name: z.string(),
+    creatorUuid: z.string(),
+    members: z.array(PersonTo),
+    messages: z.array(MessageTo),
+});
+export type TChatTo = z.infer<typeof ChatTo>;
+
+export const ChatToResp = CreateAPIResponse(ChatTo);
+export type TChatToResp = z.infer<typeof ChatToResp>;
+
+export const ChatsToResp = CreateAPIResponse(z.array(ChatTo));
+export type TChatsToResp = z.infer<typeof ChatsToResp>;

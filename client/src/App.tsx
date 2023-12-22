@@ -13,20 +13,26 @@ import { Home } from "./Home";
 import {
     homeAction,
     loginAction,
+    newChatAction,
     profileSelfAction,
     signupAction,
     userListAction,
 } from "./actions";
 import {
+    chatListLoader,
+    chatLoader,
     feedLoader,
     homeLoader,
+    newChatLoader,
     profileLoader,
     userListLoader,
 } from "./loaders";
 import { Feed } from "./Feed";
-import { Messages } from "./Messages";
 import { Profile } from "./Profile";
 import { UserList } from "./UserList";
+import { Chats } from "./Chats";
+import { ChatCreate } from "./ChatCreate";
+import { Chat } from "./Chat";
 
 const router = createBrowserRouter([
     {
@@ -46,7 +52,23 @@ const router = createBrowserRouter([
         element: <Home />,
         children: [
             { path: "feed", element: <Feed />, loader: feedLoader },
-            { path: "messages", element: <Messages /> },
+            // { path: "messages", element: <Messages /> },
+            {
+                path: "messages/chats",
+                element: <Chats />,
+                loader: chatListLoader,
+            },
+            {
+                path: "messages/chats/new",
+                element: <ChatCreate />,
+                loader: newChatLoader,
+                action: newChatAction,
+            },
+            {
+                path: "messages/chat/:id",
+                element: <Chat />,
+                loader: chatLoader,
+            },
             {
                 path: "users",
                 element: <UserList />,
