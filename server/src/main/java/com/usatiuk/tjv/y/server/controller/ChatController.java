@@ -56,6 +56,16 @@ public class ChatController {
         return chatMapper.makeDto(chat);
     }
 
+    @DeleteMapping(path = "/by-id/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(Principal principal, @PathVariable Long id) {
+        var chat = chatService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        if (!Objects.equals(chat.getCreator().getUuid(), principal.getName()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't creator of the chat");
+        chatService.deleteById(id);
+    }
+
+
     @GetMapping(path = "/my")
     public Stream<ChatTo> getMy(Principal principal) {
         return chatService.readByMember(principal.getName()).stream().map(chatMapper::makeDto);

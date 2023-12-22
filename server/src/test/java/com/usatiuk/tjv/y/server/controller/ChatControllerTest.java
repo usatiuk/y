@@ -77,6 +77,38 @@ public class ChatControllerTest extends DemoDataDbTest {
     }
 
     @Test
+    void shouldDeleteChat() {
+        Long chat1Id = chat1.getId();
+        var response = restTemplate.exchange(addr + "/chat/by-id/" + chat1Id, HttpMethod.DELETE,
+                new HttpEntity<>(createAuthHeaders(person1Auth)),
+                Object.class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        Assertions.assertFalse(chatRepository.existsById(chat1Id));
+    }
+
+    @Test
+    void shouldNotDeleteChatUnauthorized() {
+        Long chatId = chat2.getId();
+        var response = restTemplate.exchange(addr + "/chat/by-id/" + chatId, HttpMethod.DELETE,
+                new HttpEntity<>(createAuthHeaders(person1Auth)),
+                ErrorTo.class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+
+        var toResponse = response.getBody();
+        Assertions.assertNotNull(toResponse);
+
+        Assertions.assertEquals(HttpStatus.FORBIDDEN.value(), toResponse.code());
+
+        Assertions.assertTrue(chatRepository.existsById(chatId));
+    }
+
+
+    @Test
     void shouldNotChatUnauthorized() {
         var response = restTemplate.exchange(addr + "/chat/by-id/" + chat1.getId(), HttpMethod.GET,
                 new HttpEntity<>(createAuthHeaders(person3Auth)),
