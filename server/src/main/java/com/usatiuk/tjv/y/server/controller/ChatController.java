@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(value = "/chat", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,6 +54,11 @@ public class ChatController {
         if (!chat.getMembers().contains(userRef))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
         return chatMapper.makeDto(chat);
+    }
+
+    @GetMapping(path = "/my")
+    public Stream<ChatTo> getMy(Principal principal) {
+        return chatService.readByMember(principal.getName()).stream().map(chatMapper::makeDto);
     }
 
 

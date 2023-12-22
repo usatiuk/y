@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class ChatControllerTest extends DemoDataDbTest {
@@ -58,6 +59,21 @@ public class ChatControllerTest extends DemoDataDbTest {
 
             Assertions.assertEquals(chatMapper.makeDto(chat1), toResponse);
         }
+    }
+
+    @Test
+    void shouldGetChatsUserIsMemberOf() {
+        var response = restTemplate.exchange(addr + "/chat/my", HttpMethod.GET,
+                new HttpEntity<>(createAuthHeaders(person2Auth)),
+                ChatTo[].class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        var toResponse = response.getBody();
+        Assertions.assertNotNull(toResponse);
+
+        Assertions.assertIterableEquals(Stream.of(chat1, chat2).map(chatMapper::makeDto).toList(), Arrays.asList(toResponse));
     }
 
     @Test
