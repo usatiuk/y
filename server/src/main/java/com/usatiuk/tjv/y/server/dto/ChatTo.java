@@ -1,5 +1,8 @@
 package com.usatiuk.tjv.y.server.dto;
 
-public record ChatTo(Long id, String name, String creatorUuid, PersonTo[] memberUuids, MessageTo[] messages) {
+import java.util.Collection;
+
+public record ChatTo(Long id, String name, String creatorUuid, Collection<PersonTo> members,
+                     Collection<MessageTo> messages) {
 
 }

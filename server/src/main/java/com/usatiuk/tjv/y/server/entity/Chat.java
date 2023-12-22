@@ -28,7 +28,10 @@ public class Chat implements EntityWithId<Long> {
     @OneToMany(mappedBy = "chat")
     private Collection<Message> messages = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "chats")
+    @ManyToMany
+    @JoinTable(name = "chat_person",
+            joinColumns = @JoinColumn(name = "chat"),
+            inverseJoinColumns = @JoinColumn(name = "person"))
     private Collection<Person> members = new ArrayList<>();
 
     @ManyToOne

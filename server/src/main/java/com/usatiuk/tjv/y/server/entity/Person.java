@@ -52,10 +52,7 @@ public class Person implements EntityWithId<String> {
     @ManyToMany(mappedBy = "following")
     private Collection<Person> followers;
 
-    @ManyToMany
-    @JoinTable(name = "person_chat",
-            joinColumns = @JoinColumn(name = "person"),
-            inverseJoinColumns = @JoinColumn(name = "chat"))
+    @ManyToMany(mappedBy = "members")
     private Collection<Chat> chats;
 
     @Override

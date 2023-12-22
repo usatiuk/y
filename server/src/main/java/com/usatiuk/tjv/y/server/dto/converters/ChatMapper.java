@@ -1,8 +1,6 @@
 package com.usatiuk.tjv.y.server.dto.converters;
 
 import com.usatiuk.tjv.y.server.dto.ChatTo;
-import com.usatiuk.tjv.y.server.dto.MessageTo;
-import com.usatiuk.tjv.y.server.dto.PersonTo;
 import com.usatiuk.tjv.y.server.entity.Chat;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +17,7 @@ public class ChatMapper {
 
     public ChatTo makeDto(Chat chat) {
         return new ChatTo(chat.getId(), chat.getName(), chat.getCreator().getUuid(),
-                chat.getMembers().stream().map(personMapper::makeDto).toArray(PersonTo[]::new),
-                chat.getMessages().stream().map(messageMapper::makeDto).toArray(MessageTo[]::new));
+                chat.getMembers().stream().map(personMapper::makeDto).toList(),
+                chat.getMessages().stream().map(messageMapper::makeDto).toList());
     }
 }

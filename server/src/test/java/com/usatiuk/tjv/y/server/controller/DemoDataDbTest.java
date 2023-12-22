@@ -107,7 +107,7 @@ public abstract class DemoDataDbTest {
     @AfterEach
     void erase() {
         assert !TestTransaction.isActive();
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "person_follows", "person_chat", "post", "chat", "message", "person");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "person_follows", "chat_person", "post", "chat", "message", "person");
     }
 
 }

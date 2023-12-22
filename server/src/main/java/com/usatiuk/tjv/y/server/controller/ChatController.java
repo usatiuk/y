@@ -46,10 +46,11 @@ public class ChatController {
         return chatMapper.makeDto(chat);
     }
 
-    @PostMapping(path = "/by-id/:id")
+    @GetMapping(path = "/by-id/{id}")
     public ChatTo get(Principal principal, @PathVariable Long id) {
         var chat = chatService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        if (!chat.getMembers().contains(entityManager.getReference(Person.class, principal.getName())))
+        var userRef = entityManager.getReference(Person.class, principal.getName());
+        if (!chat.getMembers().contains(userRef))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
         return chatMapper.makeDto(chat);
     }
