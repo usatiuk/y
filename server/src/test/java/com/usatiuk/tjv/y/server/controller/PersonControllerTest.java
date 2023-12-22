@@ -18,6 +18,9 @@ public class PersonControllerTest extends DemoDataDbTest {
     @Autowired
     private PersonRepository personRepository;
 
+    @Autowired
+    private PersonMapper personMapper;
+
     @Test
     void shouldSignUp() {
         var response = restTemplate.exchange(addr + "/person", HttpMethod.POST,
@@ -89,7 +92,7 @@ public class PersonControllerTest extends DemoDataDbTest {
         Assertions.assertNotNull(personToResponse);
 
         Assertions.assertEquals(2, personToResponse.length);
-        Assertions.assertIterableEquals(Arrays.asList(personToResponse), List.of(PersonMapper.makeDto(person2), PersonMapper.makeDto(person3)));
+        Assertions.assertIterableEquals(Arrays.asList(personToResponse), List.of(personMapper.makeDto(person2), personMapper.makeDto(person3)));
     }
 
     @Test
@@ -116,7 +119,7 @@ public class PersonControllerTest extends DemoDataDbTest {
         Assertions.assertNotNull(personToResponse);
 
         Assertions.assertEquals(2, personToResponse.length);
-        Assertions.assertIterableEquals(Arrays.asList(personToResponse), List.of(PersonMapper.makeDto(person2), PersonMapper.makeDto(person1)));
+        Assertions.assertIterableEquals(Arrays.asList(personToResponse), List.of(personMapper.makeDto(person2), personMapper.makeDto(person1)));
     }
 
     @Test
@@ -137,7 +140,7 @@ public class PersonControllerTest extends DemoDataDbTest {
         Assertions.assertNotNull(personToResponse);
 
         Assertions.assertEquals(1, personToResponse.length);
-        Assertions.assertIterableEquals(Arrays.asList(personToResponse), List.of(PersonMapper.makeDto(person3)));
+        Assertions.assertIterableEquals(Arrays.asList(personToResponse), List.of(personMapper.makeDto(person3)));
     }
 
 }

@@ -29,6 +29,9 @@ public class Chat implements EntityWithId<Long> {
     private Collection<Message> messages = new ArrayList<>();
 
     @ManyToMany(mappedBy = "chats")
-    private Collection<Person> users;
+    private Collection<Person> members = new ArrayList<>();
+
+    @ManyToOne
+    private Person creator;
 
 }

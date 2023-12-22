@@ -67,6 +67,7 @@ public class WebSecurityConfig {
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/person/by-username/*")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/person/by-uuid/*")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/token")).permitAll()
+                        .requestMatchers(mvc.pattern("/error")).permitAll()
                         .anyRequest().hasAuthority(UserRoles.ROLE_USER.name()))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

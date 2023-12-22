@@ -18,6 +18,9 @@ public class PostControllerTest extends DemoDataDbTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private PostMapper postMapper;
+
     @Test
     void shouldNotCreatePostWithoutAuth() {
         Long postsBefore = postRepository.count();
@@ -70,7 +73,7 @@ public class PostControllerTest extends DemoDataDbTest {
         Assertions.assertNotNull(parsedResponse);
         Assertions.assertTrue(parsedResponse.length > 0);
         Assertions.assertEquals(parsedResponse.length, repoResponse.size());
-        Assertions.assertIterableEquals(Arrays.asList(parsedResponse), repoResponse.stream().map(PostMapper::makeDto).toList());
+        Assertions.assertIterableEquals(Arrays.asList(parsedResponse), repoResponse.stream().map(postMapper::makeDto).toList());
     }
 
     @Test
@@ -83,6 +86,6 @@ public class PostControllerTest extends DemoDataDbTest {
 
         Assertions.assertNotNull(parsedResponse);
         Assertions.assertEquals(2, parsedResponse.length);
-        Assertions.assertIterableEquals(Arrays.asList(parsedResponse), List.of(PostMapper.makeDto(post1), PostMapper.makeDto(post2)));
+        Assertions.assertIterableEquals(Arrays.asList(parsedResponse), List.of(postMapper.makeDto(post1), postMapper.makeDto(post2)));
     }
 }

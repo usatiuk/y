@@ -20,9 +20,11 @@ import java.util.stream.StreamSupport;
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PersonController {
     private final PersonService personService;
+    private final PersonMapper personMapper;
 
-    public PersonController(PersonService personService) {
+    public PersonController(PersonService personService, PersonMapper personMapper) {
         this.personService = personService;
+        this.personMapper = personMapper;
     }
 
     @PostMapping
@@ -34,7 +36,7 @@ public class PersonController {
 
         Person created = personService.signup(toCreate);
 
-        return PersonMapper.makeDto(created);
+        return personMapper.makeDto(created);
     }
 
     @GetMapping(path = "/by-username/{username}")
@@ -43,7 +45,7 @@ public class PersonController {
 
         if (found.isEmpty()) throw new UserNotFoundException();
 
-        return PersonMapper.makeDto(found.get());
+        return personMapper.makeDto(found.get());
     }
 
     @GetMapping(path = "/by-uuid/{uuid}")
@@ -52,7 +54,7 @@ public class PersonController {
 
         if (found.isEmpty()) throw new UserNotFoundException();
 
-        return PersonMapper.makeDto(found.get());
+        return personMapper.makeDto(found.get());
     }
 
 
@@ -62,22 +64,22 @@ public class PersonController {
 
         if (found.isEmpty()) throw new UserNotFoundException();
 
-        return PersonMapper.makeDto(found.get());
+        return personMapper.makeDto(found.get());
     }
 
     @GetMapping
     public Stream<PersonTo> getAll() throws UserNotFoundException {
-        return StreamSupport.stream(personService.readAll().spliterator(), false).map(PersonMapper::makeDto);
+        return StreamSupport.stream(personService.readAll().spliterator(), false).map(personMapper::makeDto);
     }
 
     @GetMapping(path = "/followers")
     public Stream<PersonTo> getFollowers(Principal principal) throws UserNotFoundException {
-        return personService.getFollowers(principal.getName()).stream().map(PersonMapper::makeDto);
+        return personService.getFollowers(principal.getName()).stream().map(personMapper::makeDto);
     }
 
     @GetMapping(path = "/following")
     public Stream<PersonTo> getFollowing(Principal principal) throws UserNotFoundException {
-        return personService.getFollowing(principal.getName()).stream().map(PersonMapper::makeDto);
+        return personService.getFollowing(principal.getName()).stream().map(personMapper::makeDto);
     }
 
     @PutMapping(path = "/following/{uuid}")

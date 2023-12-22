@@ -21,10 +21,12 @@ import java.util.stream.Stream;
 @RequestMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PostController {
     private final PostService postService;
+    private final PostMapper postMapper;
     private final EntityManager entityManager;
 
-    public PostController(PostService postService, EntityManager entityManager) {
+    public PostController(PostService postService, PostMapper postMapper, EntityManager entityManager) {
         this.postService = postService;
+        this.postMapper = postMapper;
         this.entityManager = entityManager;
     }
 
@@ -33,13 +35,13 @@ public class PostController {
         Post post = new Post();
         post.setAuthor(entityManager.getReference(Person.class, principal.getName()));
         post.setText(postCreateTo.text());
-        return PostMapper.makeDto(postService.create(post));
+        return postMapper.makeDto(postService.create(post));
     }
 
     @GetMapping(path = "/by-author-uuid")
     public Stream<PostTo> readAllByAuthorUuid(@RequestParam Optional<String> author) {
         if (author.isPresent())
-            return postService.readByAuthorId(author.get()).stream().map(PostMapper::makeDto);
+            return postService.readByAuthorId(author.get()).stream().map(postMapper::makeDto);
         else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
@@ -47,21 +49,21 @@ public class PostController {
     @GetMapping(path = "/by-author-username")
     public Stream<PostTo> readAllByAuthorUsername(@RequestParam Optional<String> author) {
         if (author.isPresent())
-            return postService.readByAuthorUsername(author.get()).stream().map(PostMapper::makeDto);
+            return postService.readByAuthorUsername(author.get()).stream().map(postMapper::makeDto);
         else
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping(path = "/by-following")
     public Stream<PostTo> readAllByFollowees(Principal principal) {
-        return postService.readByPersonFollowees(principal.getName()).stream().map(PostMapper::makeDto);
+        return postService.readByPersonFollowees(principal.getName()).stream().map(postMapper::makeDto);
     }
 
     @GetMapping(path = "/{id}")
     public PostTo get(@PathVariable long id) {
         var post = postService.readById(id);
         if (post.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        return PostMapper.makeDto(post.get());
+        return postMapper.makeDto(post.get());
     }
 
     @PatchMapping(path = "/{id}")
@@ -71,7 +73,7 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         post.setText(postCreateTo.text());
         postService.update(post);
-        return PostMapper.makeDto(post);
+        return postMapper.makeDto(post);
     }
 
     @DeleteMapping(path = "/{id}")

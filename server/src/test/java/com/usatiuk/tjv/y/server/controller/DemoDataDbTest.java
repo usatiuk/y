@@ -1,8 +1,10 @@
 package com.usatiuk.tjv.y.server.controller;
 
 import com.usatiuk.tjv.y.server.dto.TokenResponseTo;
+import com.usatiuk.tjv.y.server.entity.Chat;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.entity.Post;
+import com.usatiuk.tjv.y.server.repository.ChatRepository;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
 import com.usatiuk.tjv.y.server.repository.PostRepository;
 import com.usatiuk.tjv.y.server.service.TokenService;
@@ -38,6 +40,8 @@ public abstract class DemoDataDbTest {
     private PersonRepository personRepository;
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private ChatRepository chatRepository;
 
     protected static final String person1Password = "p1p";
     protected Person person1;
@@ -51,6 +55,9 @@ public abstract class DemoDataDbTest {
 
     protected Post post1;
     protected Post post2;
+
+    protected Chat chat1;
+    protected Chat chat2;
 
     protected HttpHeaders createAuthHeaders(TokenResponseTo personAuth) {
         HttpHeaders headers = new HttpHeaders();
@@ -84,12 +91,23 @@ public abstract class DemoDataDbTest {
 
         post1 = postRepository.save(new Post().setAuthor(person1).setText("post 1"));
         post2 = postRepository.save(new Post().setAuthor(person2).setText("post 2"));
+
+        chat1 = chatRepository.save(
+                new Chat()
+                        .setCreator(person1)
+                        .setMembers(List.of(person1, person2))
+                        .setName("Chat 1"));
+        chat2 = chatRepository.save(
+                new Chat()
+                        .setCreator(person3)
+                        .setMembers(List.of(person2, person3))
+                        .setName("Chat 1"));
     }
 
     @AfterEach
     void erase() {
         assert !TestTransaction.isActive();
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "user_follows", "post", "person");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "person_follows", "person_chat", "post", "chat", "message", "person");
     }
 
 }
