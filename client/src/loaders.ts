@@ -13,6 +13,7 @@ import {
     getPostsByFollowees,
 } from "./api/Post";
 import { getChat, getMyChats } from "./api/Chat";
+import { getMessagesByChat } from "./api/Message";
 
 export type LoaderToType<T extends (...args: any) => any> =
     | Exclude<Awaited<ReturnType<T>>, Response>
@@ -86,5 +87,8 @@ export async function newChatLoader() {
 }
 
 export async function chatLoader({ params }: { params: { id?: number } }) {
-    return getChat(params.id!);
+    return {
+        chat: await getChat(params.id!),
+        messages: await getMessagesByChat(params.id!),
+    };
 }

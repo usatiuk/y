@@ -1,6 +1,6 @@
 @import "./common";
 
-.chats {
+.chat {
   width: 20rem;
   margin: 0 auto;
   display: flex;
@@ -12,7 +12,7 @@
     text-decoration: none;
   }
 
-  .chatsHeader {
+  .chatHeader {
     display: flex;
     flex-direction: row;
     flex: auto;
@@ -31,7 +31,7 @@
     padding-bottom: 0.2rem;
   }
 
-  .chatsList {
+  .chatMessages {
     display: flex;
     flex: auto;
 
@@ -41,6 +41,20 @@
       flex-grow: 0;
       @include border-shadow;
     }
+
+  }
+
+  .messageForm {
+    display: flex;
+    flex-direction: row;
+    margin-top: 0.5rem;
+    //margin: 2rem;
+    min-height: 3rem;
+
+    @include border-shadow;
+    border: solid gray 1px;
+
+    @include post-editor;
 
   }
 }

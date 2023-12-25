@@ -5,6 +5,7 @@ import { isError } from "./api/dto";
 import { deleteToken, getTokenUserUuid, setToken } from "./api/utils";
 import { createPost, deletePost, updatePost } from "./api/Post";
 import { createChat } from "./api/Chat";
+import { addMessagesToChat } from "./api/Message";
 
 export type ActionToType<T extends (...args: any) => any> =
     | Exclude<Awaited<ReturnType<T>>, Response>
@@ -89,8 +90,19 @@ export async function userListAction({ request }: ActionFunctionArgs) {
 
 export async function newChatAction({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
-    return await createChat(formData.get("name")!.toString(), [
+    const ret = await createChat(formData.get("name")!.toString(), [
         ...formData.getAll("members")!.map((p) => p.toString()),
         getTokenUserUuid()!,
     ]);
+    if (ret && !isError(ret)) {
+        return redirect("/home/messages/chat/" + ret.id);
+    } else return ret;
+}
+
+export async function chatAction({ request }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    return await addMessagesToChat(
+        Number(formData.get("chatId")!.toString()),
+        formData.get("text")!.toString(),
+    );
 }

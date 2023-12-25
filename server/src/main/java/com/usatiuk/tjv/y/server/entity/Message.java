@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -21,9 +24,12 @@ public class Message implements EntityWithId<Long> {
 
     @ManyToOne
     private Chat chat;
-    
+
     @ManyToOne
     private Person author;
+
+    @CreationTimestamp
+    private Instant createdAt;
 
     @Lob
     @NotBlank

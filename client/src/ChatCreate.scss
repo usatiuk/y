@@ -1,0 +1,29 @@
+.chatsNew {
+  width: 20rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 0;
+
+  .errors {
+    margin: 2rem 0;
+    color: red;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    * {
+      margin: 0.3rem 0;
+    }
+
+    label {
+      margin-bottom: 0;
+    }
+
+    input {
+      margin-top: 0;
+    }
+  }
+}

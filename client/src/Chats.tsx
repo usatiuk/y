@@ -13,6 +13,7 @@ export function Chats() {
     return (
         <div className={"chats"}>
             <div className={"chatsHeader"}>
+                <span>Your chats</span>
                 <Link to={"../messages/chats/new"}>create</Link>
             </div>
             <div className={"chatsList"}>

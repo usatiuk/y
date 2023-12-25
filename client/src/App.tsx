@@ -11,6 +11,7 @@ import { Login } from "./Login";
 import { Signup } from "./Signup";
 import { Home } from "./Home";
 import {
+    chatAction,
     homeAction,
     loginAction,
     newChatAction,
@@ -68,6 +69,7 @@ const router = createBrowserRouter([
                 path: "messages/chat/:id",
                 element: <Chat />,
                 loader: chatLoader,
+                action: chatAction,
             },
             {
                 path: "users",

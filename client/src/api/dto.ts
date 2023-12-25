@@ -79,19 +79,23 @@ export const MessageTo = z.object({
     id: number(),
     chatId: z.number(),
     authorUuid: z.string(),
+    authorUsername: z.string(),
     contents: z.string(),
+    createdAt: z.number(),
 });
 export type TMessageTo = z.infer<typeof MessageTo>;
 
 export const MessageToResp = CreateAPIResponse(MessageTo);
 export type TMessageToResp = z.infer<typeof MessageToResp>;
 
+export const MessagesToResp = CreateAPIResponse(z.array(MessageTo));
+export type TMessagesToResp = z.infer<typeof MessagesToResp>;
+
 export const ChatTo = z.object({
     id: z.number(),
     name: z.string(),
     creatorUuid: z.string(),
-    members: z.array(PersonTo),
-    messages: z.array(MessageTo),
+    memberCount: z.number(),
 });
 export type TChatTo = z.infer<typeof ChatTo>;
 

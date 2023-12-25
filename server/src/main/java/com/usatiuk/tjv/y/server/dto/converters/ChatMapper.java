@@ -6,18 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ChatMapper {
-
-    private final PersonMapper personMapper;
-    private final MessageMapper messageMapper;
-
-    public ChatMapper(PersonMapper personMapper, MessageMapper messageMapper) {
-        this.personMapper = personMapper;
-        this.messageMapper = messageMapper;
-    }
-
     public ChatTo makeDto(Chat chat) {
-        return new ChatTo(chat.getId(), chat.getName(), chat.getCreator().getUuid(),
-                chat.getMembers().stream().map(personMapper::makeDto).toList(),
-                chat.getMessages().stream().map(messageMapper::makeDto).toList());
+        return new ChatTo(chat.getId(), chat.getName(), chat.getCreator().getUuid(), (long) chat.getMembers().size());
     }
 }

@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 public class MessageMapper {
     public MessageTo makeDto(Message message) {
         return new MessageTo(message.getId(), message.getChat().getId(),
-                message.getAuthor().getUuid(), message.getContents());
+                message.getAuthor().getUuid(), message.getAuthor().getUsername(), message.getContents(), message.getCreatedAt().getEpochSecond());
     }
 }

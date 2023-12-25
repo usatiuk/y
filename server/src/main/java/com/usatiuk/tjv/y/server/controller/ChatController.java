@@ -37,6 +37,9 @@ public class ChatController {
         if (Arrays.stream(chatCreateTo.memberUuids()).noneMatch(n -> Objects.equals(n, principal.getName())))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Creator of chat must be its member");
 
+        if (chatCreateTo.memberUuids().length <= 1)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chat must have members other than its creator");
+
         chat.setCreator(entityManager.getReference(Person.class, principal.getName()));
         chat.setMembers(Arrays.stream(chatCreateTo.memberUuids()).map(
                 p -> entityManager.getReference(Person.class, p)
