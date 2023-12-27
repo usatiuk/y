@@ -11,7 +11,7 @@ import { isError } from "./api/dto";
 import { deleteToken, getTokenUserUuid, setToken } from "./api/utils";
 import { createPost, deletePost, updatePost } from "./api/Post";
 import { createChat } from "./api/Chat";
-import { addMessagesToChat } from "./api/Message";
+import { addMessagesToChat, deleteMessage, editMessage } from "./api/Message";
 
 export type ActionToType<T extends (...args: any) => any> =
     | Exclude<Awaited<ReturnType<T>>, Response>
@@ -117,8 +117,20 @@ export async function newChatAction({ request }: ActionFunctionArgs) {
 
 export async function chatAction({ request }: ActionFunctionArgs) {
     const formData = await request.formData();
-    return await addMessagesToChat(
-        Number(formData.get("chatId")!.toString()),
-        formData.get("text")!.toString(),
-    );
+    const intent = formData.get("intent")!.toString();
+    if (intent == "addMessage") {
+        return await addMessagesToChat(
+            Number(formData.get("chatId")!.toString()),
+            formData.get("text")!.toString(),
+        );
+    } else if (intent == "deleteMessage") {
+        return await deleteMessage(
+            Number(formData.get("messageToDeleteId")!.toString()),
+        );
+    } else if (intent == "updateMessage") {
+        return await editMessage(
+            Number(formData.get("messageId")!.toString()),
+            formData.get("text")!.toString(),
+        );
+    }
 }

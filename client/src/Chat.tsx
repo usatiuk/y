@@ -6,6 +6,7 @@ import "./Chat.scss";
 import "./PostForm.scss";
 import { Message } from "./Message";
 import { useEffect } from "react";
+import { getTokenUserUuid } from "./api/utils";
 
 export function Chat() {
     const loaderData = useLoaderData() as LoaderToType<typeof chatLoader>;
@@ -51,7 +52,12 @@ export function Chat() {
             </fetcher.Form>
             <div className={"messages"}>
                 {sortedMessages.map((m) => (
-                    <Message key={m.id} message={m} chat={chat} />
+                    <Message
+                        key={m.id}
+                        message={m}
+                        chat={chat}
+                        actions={m.authorUuid == getTokenUserUuid()}
+                    />
                 ))}
             </div>
         </div>

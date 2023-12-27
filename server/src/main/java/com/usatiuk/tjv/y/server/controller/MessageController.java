@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @RestController
@@ -52,4 +53,26 @@ public class MessageController {
         messageService.create(message);
         return messageMapper.makeDto(message);
     }
+
+    @PatchMapping(path = "/by-id/{id}")
+    public MessageTo update(Principal principal, @PathVariable long id, @RequestBody MessageCreateTo messageCreateTo) {
+        var message = messageService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (!Objects.equals(message.getAuthor().getUuid(), principal.getName()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        message.setContents(messageCreateTo.contents());
+        messageService.update(message);
+        return messageMapper.makeDto(message);
+    }
+
+    @DeleteMapping(path = "/by-id/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(Principal principal, @PathVariable long id) {
+        var read = messageService.readById(id);
+        if (read.isEmpty()) return;
+        if (!Objects.equals(read.get().getAuthor().getId(), principal.getName())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        messageService.deleteById(id);
+    }
+
 }
