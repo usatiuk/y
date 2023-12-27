@@ -20,6 +20,22 @@ export async function signup(
     });
 }
 
+export async function updateSelf(
+    username: string,
+    fullName: string,
+    password: string,
+): Promise<TPersonToResp> {
+    return fetchJSONAuth("/person/self", "PATCH", PersonToResp, {
+        username,
+        fullName,
+        password,
+    });
+}
+
+export async function deleteSelf(): Promise<TNoContentToResp> {
+    return fetchJSONAuth("/person/self", "DELETE", NoContentToResp);
+}
+
 export async function getPersonByUuid(uuid: string): Promise<TPersonToResp> {
     return fetchJSONAuth("/person/by-uuid/" + uuid, "GET", PersonToResp);
 }

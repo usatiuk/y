@@ -25,6 +25,28 @@
 
     }
 
+    form {
+      display: flex;
+      flex-direction: column;
+      max-width: 10rem;
+
+      input {
+        margin-bottom: 0.2rem;
+      }
+    }
+
+    button {
+      text-align: left;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+      padding-top: 0.5rem;
+      color: black;
+      font-family: inherit;
+    }
+
   }
 
   .newPost {

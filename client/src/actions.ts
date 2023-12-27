@@ -1,4 +1,10 @@
-import { addFollower, removeFollower, signup } from "./api/Person";
+import {
+    addFollower,
+    deleteSelf,
+    removeFollower,
+    signup,
+    updateSelf,
+} from "./api/Person";
 import { ActionFunctionArgs, redirect } from "react-router-dom";
 import { login } from "./api/Token";
 import { isError } from "./api/dto";
@@ -66,6 +72,16 @@ export async function profileSelfAction({ request }: ActionFunctionArgs) {
             formData.get("text")!.toString(),
             parseInt(formData.get("postId")!.toString()),
         );
+    } else if (intent == "user") {
+        return await updateSelf(
+            formData.get("username")!.toString(),
+            formData.get("fullName")!.toString(),
+            formData.get("password")!.toString(),
+        );
+    } else if (intent == "deleteSelf") {
+        await deleteSelf();
+        deleteToken();
+        return redirect("/");
     }
 }
 

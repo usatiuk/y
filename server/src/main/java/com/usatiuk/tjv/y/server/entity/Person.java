@@ -34,13 +34,13 @@ public class Person implements EntityWithId<String> {
     @NotBlank(message = "Password can't be empty")
     private String password;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", orphanRemoval = true)
     private Collection<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", orphanRemoval = true)
     private Collection<Chat> createdChats = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", orphanRemoval = true)
     private Collection<Message> messages = new ArrayList<>();
 
     @ManyToMany

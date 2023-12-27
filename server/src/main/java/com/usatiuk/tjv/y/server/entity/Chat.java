@@ -25,7 +25,7 @@ public class Chat implements EntityWithId<Long> {
     @NotBlank
     private String name;
 
-    @OneToMany(mappedBy = "chat")
+    @OneToMany(mappedBy = "chat", orphanRemoval = true)
     private Collection<Message> messages = new ArrayList<>();
 
     @ManyToMany
