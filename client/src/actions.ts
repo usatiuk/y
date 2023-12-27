@@ -10,7 +10,7 @@ import { login } from "./api/Token";
 import { isError } from "./api/dto";
 import { deleteToken, getTokenUserUuid, setToken } from "./api/utils";
 import { createPost, deletePost, updatePost } from "./api/Post";
-import { createChat } from "./api/Chat";
+import { createChat, deleteChat, updateChat } from "./api/Chat";
 import { addMessagesToChat, deleteMessage, editMessage } from "./api/Message";
 
 export type ActionToType<T extends (...args: any) => any> =
@@ -113,6 +113,33 @@ export async function newChatAction({ request }: ActionFunctionArgs) {
     if (ret && !isError(ret)) {
         return redirect("/home/messages/chat/" + ret.id);
     } else return ret;
+}
+
+export async function editChatAction({ request }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    const intent = formData.get("intent")!.toString();
+    if (intent == "update") {
+        const ret = await updateChat(
+            Number(formData.get("chatId")!.toString()),
+            formData.get("name")!.toString(),
+            [
+                ...formData.getAll("members")!.map((p) => p.toString()),
+                getTokenUserUuid()!,
+            ],
+        );
+
+        if (ret && !isError(ret)) {
+            return redirect("/home/messages/chat/" + ret.id);
+        } else return ret;
+    } else if (intent == "delete") {
+        const ret = await deleteChat(
+            Number(formData.get("chatId")!.toString()),
+        );
+
+        if (ret && !isError(ret)) {
+            return redirect("/home/messages/chats");
+        } else return ret;
+    }
 }
 
 export async function chatAction({ request }: ActionFunctionArgs) {

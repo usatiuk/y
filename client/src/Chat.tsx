@@ -1,4 +1,9 @@
-import { useFetcher, useLoaderData, useRevalidator } from "react-router-dom";
+import {
+    Link,
+    useFetcher,
+    useLoaderData,
+    useRevalidator,
+} from "react-router-dom";
 import { chatLoader, LoaderToType } from "./loaders";
 import { isError } from "./api/dto";
 
@@ -37,7 +42,14 @@ export function Chat() {
 
     return (
         <div className={"chat"}>
-            <div className={"chatHeader"}>{chat.name}</div>
+            <div className={"chatHeader"}>
+                <span className={"chatHeaderName"}>{chat.name}</span>
+                {chat.creatorUuid == getTokenUserUuid() && (
+                    <span className={"chatHeaderActions"}>
+                        <Link to={"edit"}>edit</Link>
+                    </span>
+                )}
+            </div>
             <fetcher.Form className={"messageForm postForm"} method="post">
                 <textarea placeholder={"Write something!"} name="text" />
                 <input hidden={true} value={chat.id} name={"chatId"} />

@@ -12,7 +12,7 @@ import {
     getPostsByAuthorUuid,
     getPostsByFollowees,
 } from "./api/Post";
-import { getChat, getMyChats } from "./api/Chat";
+import { getChat, getMembers, getMyChats } from "./api/Chat";
 import { getMessagesByChat } from "./api/Message";
 
 export type LoaderToType<T extends (...args: any) => any> =
@@ -84,6 +84,14 @@ export async function chatListLoader() {
 
 export async function newChatLoader() {
     return await getAllPerson();
+}
+
+export async function editChatLoader({ params }: { params: { id?: number } }) {
+    return {
+        people: await getAllPerson(),
+        chat: await getChat(params.id!),
+        chatMembers: await getMembers(params.id!),
+    };
 }
 
 export async function chatLoader({ params }: { params: { id?: number } }) {

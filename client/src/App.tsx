@@ -12,6 +12,7 @@ import { Signup } from "./Signup";
 import { Home } from "./Home";
 import {
     chatAction,
+    editChatAction,
     homeAction,
     loginAction,
     newChatAction,
@@ -22,6 +23,7 @@ import {
 import {
     chatListLoader,
     chatLoader,
+    editChatLoader,
     feedLoader,
     homeLoader,
     newChatLoader,
@@ -34,6 +36,7 @@ import { UserList } from "./UserList";
 import { Chats } from "./Chats";
 import { ChatCreate } from "./ChatCreate";
 import { Chat } from "./Chat";
+import { ChatEdit } from "./ChatEdit";
 
 const router = createBrowserRouter([
     {
@@ -70,6 +73,12 @@ const router = createBrowserRouter([
                 element: <Chat />,
                 loader: chatLoader,
                 action: chatAction,
+            },
+            {
+                path: "messages/chat/:id/edit",
+                element: <ChatEdit />,
+                loader: editChatLoader,
+                action: editChatAction,
             },
             {
                 path: "users",
