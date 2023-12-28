@@ -28,6 +28,7 @@ export function UserList() {
                         uuid={u.uuid}
                         key={u.uuid}
                         actions={homeContext.user.uuid != u.uuid}
+                        isAdmin={u.isAdmin}
                         alreadyFollowing={following.some(
                             (f) => f.uuid == u.uuid,
                         )}

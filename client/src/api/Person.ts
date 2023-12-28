@@ -73,3 +73,11 @@ export async function removeFollower(uuid: string): Promise<TNoContentToResp> {
         NoContentToResp,
     );
 }
+
+export async function addAdmin(uuid: string): Promise<TNoContentToResp> {
+    return fetchJSONAuth("/person/admins/" + uuid, "PUT", NoContentToResp);
+}
+
+export async function removeAdmin(uuid: string): Promise<TNoContentToResp> {
+    return fetchJSONAuth("/person/admins/" + uuid, "DELETE", NoContentToResp);
+}

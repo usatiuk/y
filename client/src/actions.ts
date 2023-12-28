@@ -1,6 +1,8 @@
 import {
+    addAdmin,
     addFollower,
     deleteSelf,
+    removeAdmin,
     removeFollower,
     signup,
     updateSelf,
@@ -101,6 +103,10 @@ export async function userListAction({ request }: ActionFunctionArgs) {
         return await addFollower(formData.get("uuid")!.toString());
     } else if (intent == "unfollow") {
         return await removeFollower(formData.get("uuid")!.toString());
+    } else if (intent == "unadmin") {
+        return await removeAdmin(formData.get("uuid")!.toString());
+    } else if (intent == "admin") {
+        return await addAdmin(formData.get("uuid")!.toString());
     }
 }
 

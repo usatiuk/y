@@ -43,6 +43,8 @@ public class Person implements EntityWithId<String> {
     @OneToMany(mappedBy = "author", orphanRemoval = true)
     private Collection<Message> messages = new ArrayList<>();
 
+    private boolean admin;
+
     @ManyToMany
     @JoinTable(name = "person_follows",
             joinColumns = @JoinColumn(name = "follower"),

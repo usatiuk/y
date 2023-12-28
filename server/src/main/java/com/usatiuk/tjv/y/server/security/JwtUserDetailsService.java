@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +24,9 @@ public class JwtUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String uuid) {
         Optional<Person> person = personService.readById(uuid);
         if (!person.isPresent()) throw new UsernameNotFoundException("User with UUID " + uuid + " not found");
-        List<SimpleGrantedAuthority> roles =
-                Collections.singletonList(new SimpleGrantedAuthority(UserRoles.ROLE_USER.name()));
+        ArrayList<SimpleGrantedAuthority> roles =
+                new ArrayList<>(List.of(new SimpleGrantedAuthority(UserRoles.ROLE_USER.name())));
+        if (person.get().isAdmin()) roles.add(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name()));
         return new JwtUser(uuid, person.get().getPassword(), roles);
     }
 

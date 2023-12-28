@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersonMapper {
     public PersonTo makeDto(Person person) {
-        return new PersonTo(person.getUuid(), person.getUsername(), person.getFullName());
+        return new PersonTo(person.getUuid(), person.getUsername(), person.getFullName(), person.isAdmin());
     }
 }

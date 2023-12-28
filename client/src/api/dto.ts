@@ -31,6 +31,7 @@ export const PersonTo = z.object({
     uuid: z.string(),
     username: z.string(),
     fullName: z.string(),
+    isAdmin: z.boolean(),
 });
 export type TPersonTo = z.infer<typeof PersonTo>;
 

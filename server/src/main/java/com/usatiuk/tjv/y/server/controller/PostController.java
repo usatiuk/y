@@ -9,10 +9,10 @@ import com.usatiuk.tjv.y.server.service.PostService;
 import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -31,9 +31,9 @@ public class PostController {
     }
 
     @PostMapping
-    public PostTo createPost(Principal principal, @RequestBody PostCreateTo postCreateTo) {
+    public PostTo createPost(Authentication authentication, @RequestBody PostCreateTo postCreateTo) {
         Post post = new Post();
-        post.setAuthor(entityManager.getReference(Person.class, principal.getName()));
+        post.setAuthor(entityManager.getReference(Person.class, authentication.getName()));
         post.setText(postCreateTo.text());
         return postMapper.makeDto(postService.create(post));
     }
@@ -55,8 +55,8 @@ public class PostController {
     }
 
     @GetMapping(path = "/by-following")
-    public Stream<PostTo> readAllByFollowees(Principal principal) {
-        return postService.readByPersonFollowees(principal.getName()).stream().map(postMapper::makeDto);
+    public Stream<PostTo> readAllByFollowees(Authentication authentication) {
+        return postService.readByPersonFollowees(authentication.getName()).stream().map(postMapper::makeDto);
     }
 
     @GetMapping(path = "/{id}")
@@ -67,9 +67,9 @@ public class PostController {
     }
 
     @PatchMapping(path = "/{id}")
-    public PostTo update(Principal principal, @PathVariable long id, @RequestBody PostCreateTo postCreateTo) {
+    public PostTo update(Authentication authentication, @PathVariable long id, @RequestBody PostCreateTo postCreateTo) {
         var post = postService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!Objects.equals(post.getAuthor().getUuid(), principal.getName()))
+        if (!Objects.equals(post.getAuthor().getUuid(), authentication.getName()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         post.setText(postCreateTo.text());
         postService.update(post);
@@ -78,10 +78,10 @@ public class PostController {
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(Principal principal, @PathVariable long id) {
+    public void delete(Authentication authentication, @PathVariable long id) {
         var read = postService.readById(id);
         if (read.isEmpty()) return;
-        if (!Objects.equals(read.get().getAuthor().getId(), principal.getName())) {
+        if (!Objects.equals(read.get().getAuthor().getId(), authentication.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         postService.deleteById(id);

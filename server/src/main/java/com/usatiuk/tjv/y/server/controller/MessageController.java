@@ -10,10 +10,10 @@ import com.usatiuk.tjv.y.server.service.MessageService;
 import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -33,9 +33,9 @@ public class MessageController {
     }
 
     @GetMapping(path = "/by-chat/{chatTd}")
-    public Stream<MessageTo> get(Principal principal, @PathVariable Long chatTd) {
+    public Stream<MessageTo> get(Authentication authentication, @PathVariable Long chatTd) {
         var chat = chatService.readById(chatTd).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        var userRef = entityManager.getReference(Person.class, principal.getName());
+        var userRef = entityManager.getReference(Person.class, authentication.getName());
         if (!chat.getMembers().contains(userRef))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
 
@@ -43,9 +43,9 @@ public class MessageController {
     }
 
     @PostMapping(path = "/by-chat/{chatId}")
-    public MessageTo post(Principal principal, @PathVariable Long chatId, @RequestBody MessageCreateTo messageCreateTo) {
+    public MessageTo post(Authentication authentication, @PathVariable Long chatId, @RequestBody MessageCreateTo messageCreateTo) {
         var chat = chatService.readById(chatId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        var userRef = entityManager.getReference(Person.class, principal.getName());
+        var userRef = entityManager.getReference(Person.class, authentication.getName());
         if (!chat.getMembers().contains(userRef))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
 
@@ -55,9 +55,9 @@ public class MessageController {
     }
 
     @PatchMapping(path = "/by-id/{id}")
-    public MessageTo update(Principal principal, @PathVariable long id, @RequestBody MessageCreateTo messageCreateTo) {
+    public MessageTo update(Authentication authentication, @PathVariable long id, @RequestBody MessageCreateTo messageCreateTo) {
         var message = messageService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!Objects.equals(message.getAuthor().getUuid(), principal.getName()))
+        if (!Objects.equals(message.getAuthor().getUuid(), authentication.getName()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         message.setContents(messageCreateTo.contents());
         messageService.update(message);
@@ -66,10 +66,10 @@ public class MessageController {
 
     @DeleteMapping(path = "/by-id/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(Principal principal, @PathVariable long id) {
+    public void delete(Authentication authentication, @PathVariable long id) {
         var read = messageService.readById(id);
         if (read.isEmpty()) return;
-        if (!Objects.equals(read.get().getAuthor().getId(), principal.getName())) {
+        if (!Objects.equals(read.get().getAuthor().getId(), authentication.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         messageService.deleteById(id);

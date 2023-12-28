@@ -11,10 +11,10 @@ import com.usatiuk.tjv.y.server.service.ChatService;
 import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -36,16 +36,16 @@ public class ChatController {
     }
 
     @PostMapping
-    public ChatTo create(Principal principal, @RequestBody ChatCreateTo chatCreateTo) {
+    public ChatTo create(Authentication authentication, @RequestBody ChatCreateTo chatCreateTo) {
         var chat = new Chat();
 
-        if (Arrays.stream(chatCreateTo.memberUuids()).noneMatch(n -> Objects.equals(n, principal.getName())))
+        if (Arrays.stream(chatCreateTo.memberUuids()).noneMatch(n -> Objects.equals(n, authentication.getName())))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Creator of chat must be its member");
 
         if (chatCreateTo.memberUuids().length <= 1)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chat must have members other than its creator");
 
-        chat.setCreator(entityManager.getReference(Person.class, principal.getName()));
+        chat.setCreator(entityManager.getReference(Person.class, authentication.getName()));
         chat.setMembers(Arrays.stream(chatCreateTo.memberUuids()).map(
                 p -> entityManager.getReference(Person.class, p)
         ).toList());
@@ -56,9 +56,9 @@ public class ChatController {
     }
 
     @GetMapping(path = "/by-id/{id}")
-    public ChatTo get(Principal principal, @PathVariable Long id) {
+    public ChatTo get(Authentication authentication, @PathVariable Long id) {
         var chat = chatService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        var userRef = entityManager.getReference(Person.class, principal.getName());
+        var userRef = entityManager.getReference(Person.class, authentication.getName());
         if (!chat.getMembers().contains(userRef))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
         return chatMapper.makeDto(chat);
@@ -66,25 +66,25 @@ public class ChatController {
 
     @DeleteMapping(path = "/by-id/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(Principal principal, @PathVariable Long id) {
+    public void delete(Authentication authentication, @PathVariable Long id) {
         var chat = chatService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        if (!Objects.equals(chat.getCreator().getUuid(), principal.getName()))
+        if (!Objects.equals(chat.getCreator().getUuid(), authentication.getName()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't creator of the chat");
         chatService.deleteById(id);
     }
 
     @PatchMapping(path = "/by-id/{id}")
-    public ChatTo update(Principal principal, @PathVariable Long id, @RequestBody ChatCreateTo chatCreateTo) {
+    public ChatTo update(Authentication authentication, @PathVariable Long id, @RequestBody ChatCreateTo chatCreateTo) {
         var chat = chatService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        if (!Objects.equals(chat.getCreator().getUuid(), principal.getName()))
+        if (!Objects.equals(chat.getCreator().getUuid(), authentication.getName()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't creator of the chat");
 
-        if (Arrays.stream(chatCreateTo.memberUuids()).noneMatch(n -> Objects.equals(n, principal.getName())))
+        if (Arrays.stream(chatCreateTo.memberUuids()).noneMatch(n -> Objects.equals(n, authentication.getName())))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Creator of chat must be its member");
 
         if (chatCreateTo.memberUuids().length <= 1)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chat must have members other than its creator");
-        
+
         chat.setMembers(new ArrayList<>(Arrays.stream(chatCreateTo.memberUuids()).map(
                 p -> entityManager.getReference(Person.class, p)
         ).toList()));
@@ -96,14 +96,14 @@ public class ChatController {
 
 
     @GetMapping(path = "/my")
-    public Stream<ChatTo> getMy(Principal principal) {
-        return chatService.readByMember(principal.getName()).stream().map(chatMapper::makeDto);
+    public Stream<ChatTo> getMy(Authentication authentication) {
+        return chatService.readByMember(authentication.getName()).stream().map(chatMapper::makeDto);
     }
 
     @GetMapping(path = "/by-id/{id}/members")
-    public Stream<PersonTo> getMembers(Principal principal, @PathVariable Long id) {
+    public Stream<PersonTo> getMembers(Authentication authentication, @PathVariable Long id) {
         var chat = chatService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        var userRef = entityManager.getReference(Person.class, principal.getName());
+        var userRef = entityManager.getReference(Person.class, authentication.getName());
         if (!chat.getMembers().contains(userRef))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
         return chat.getMembers().stream().map(personMapper::makeDto);

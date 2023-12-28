@@ -1,5 +1,6 @@
 import "./ProfileCard.scss";
 import { Form, Link, useNavigation } from "react-router-dom";
+import { useHomeContext } from "./HomeContext";
 
 export function ProfileCard({
     username,
@@ -7,13 +8,17 @@ export function ProfileCard({
     uuid,
     actions,
     alreadyFollowing,
+    isAdmin,
 }: {
     username: string;
     fullName: string;
     uuid: string;
     actions: boolean;
     alreadyFollowing: boolean;
+    isAdmin: boolean;
 }) {
+    const homeContext = useHomeContext();
+
     const navigation = useNavigation();
     const busy = navigation.state === "submitting";
 
@@ -51,6 +56,32 @@ export function ProfileCard({
                                 disabled={busy}
                             >
                                 follow
+                            </button>
+                        </Form>
+                    ))}
+                {homeContext.user.isAdmin &&
+                    (isAdmin ? (
+                        <Form method={"put"}>
+                            <input hidden={true} value={uuid} name={"uuid"} />
+                            <button
+                                type={"submit"}
+                                name={"intent"}
+                                value={"unadmin"}
+                                disabled={busy}
+                            >
+                                unadmin
+                            </button>
+                        </Form>
+                    ) : (
+                        <Form method={"put"}>
+                            <input hidden={true} value={uuid} name={"uuid"} />
+                            <button
+                                type={"submit"}
+                                name={"intent"}
+                                value={"admin"}
+                                disabled={busy}
+                            >
+                                make admin
                             </button>
                         </Form>
                     ))}
