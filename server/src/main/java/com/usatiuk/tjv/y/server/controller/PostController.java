@@ -5,17 +5,20 @@ import com.usatiuk.tjv.y.server.dto.PostTo;
 import com.usatiuk.tjv.y.server.dto.converters.PostMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.entity.Post;
+import com.usatiuk.tjv.y.server.security.UserRoles;
 import com.usatiuk.tjv.y.server.service.PostService;
 import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -85,6 +88,14 @@ public class PostController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         postService.deleteById(id);
+    }
+
+    @GetMapping
+    public Stream<PostTo> getAll(Authentication authentication) {
+        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+
+        return StreamSupport.stream(postService.readAll().spliterator(), false).map(postMapper::makeDto);
     }
 
 }

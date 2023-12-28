@@ -37,6 +37,7 @@ import { Chats } from "./Chats";
 import { ChatCreate } from "./ChatCreate";
 import { Chat } from "./Chat";
 import { ChatEdit } from "./ChatEdit";
+import { Haters } from "./Haters";
 
 const router = createBrowserRouter([
     {
@@ -97,6 +98,10 @@ const router = createBrowserRouter([
                 loader: profileLoader,
                 // action: profileSelfAction,
                 element: <Profile self={false} />,
+            },
+            {
+                path: "haters",
+                element: <Haters />,
             },
         ],
     },

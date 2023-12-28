@@ -5,17 +5,20 @@ import com.usatiuk.tjv.y.server.dto.MessageTo;
 import com.usatiuk.tjv.y.server.dto.converters.MessageMapper;
 import com.usatiuk.tjv.y.server.entity.Message;
 import com.usatiuk.tjv.y.server.entity.Person;
+import com.usatiuk.tjv.y.server.security.UserRoles;
 import com.usatiuk.tjv.y.server.service.ChatService;
 import com.usatiuk.tjv.y.server.service.MessageService;
 import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping(value = "/message", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -74,5 +77,14 @@ public class MessageController {
         }
         messageService.deleteById(id);
     }
+
+    @GetMapping
+    public Stream<MessageTo> getAll(Authentication authentication) {
+        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+
+        return StreamSupport.stream(messageService.readAll().spliterator(), false).map(messageMapper::makeDto);
+    }
+
 
 }

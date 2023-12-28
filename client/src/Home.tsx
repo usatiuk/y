@@ -53,6 +53,14 @@ export function Home() {
                     <NavLink to={"profile"} className={activePendingClassName}>
                         Profile
                     </NavLink>
+                    {loaderData.isAdmin && (
+                        <NavLink
+                            to={"haters"}
+                            className={activePendingClassName}
+                        >
+                            Haters
+                        </NavLink>
+                    )}
                 </div>
             </div>
             <div id="HomeContent">

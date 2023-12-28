@@ -46,3 +46,7 @@ export async function deleteMessage(
         NoContentToResp,
     );
 }
+
+export async function getAllMessage(): Promise<TMessagesToResp> {
+    return fetchJSONAuth("/message", "GET", MessagesToResp);
+}

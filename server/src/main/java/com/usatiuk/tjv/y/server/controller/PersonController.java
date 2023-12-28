@@ -5,6 +5,7 @@ import com.usatiuk.tjv.y.server.dto.PersonTo;
 import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.entity.Chat;
 import com.usatiuk.tjv.y.server.entity.Person;
+import com.usatiuk.tjv.y.server.security.UserRoles;
 import com.usatiuk.tjv.y.server.service.ChatService;
 import com.usatiuk.tjv.y.server.service.PersonService;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
@@ -12,6 +13,7 @@ import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -95,6 +97,26 @@ public class PersonController {
         }
         personService.deleteById(authentication.getName());
     }
+
+    @DeleteMapping(path = "/by-uuid/{uuid}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteByUuid(Authentication authentication, @PathVariable String uuid) throws UserNotFoundException {
+        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+
+        var person = personService.readById(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        for (Chat c : person.getChats()) {
+            c.getMembers().remove(person);
+            chatService.update(c);
+        }
+        for (Person p : person.getFollowers()) {
+            p.getFollowing().remove(person);
+            personService.update(p);
+        }
+
+        personService.deleteById(person.getUuid());
+    }
+
 
     @GetMapping
     public Stream<PersonTo> getAll() throws UserNotFoundException {

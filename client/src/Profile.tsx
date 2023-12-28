@@ -76,17 +76,25 @@ export function Profile({ self }: IProfileProps) {
                     <>
                         <span className={"fullName"}>{user.fullName}</span>
                         <span className={"username"}>{user.username}</span>
-                        {<button onClick={() => setEditing(true)}>edit</button>}
-                        <Form className={"postForm"} method="post">
-                            <button
-                                name="intent"
-                                value="deleteSelf"
-                                type="submit"
-                                disabled={busy}
-                            >
-                                delete account
-                            </button>
-                        </Form>
+                        {self && (
+                            <>
+                                {
+                                    <button onClick={() => setEditing(true)}>
+                                        edit
+                                    </button>
+                                }
+                                <Form className={"postForm"} method="post">
+                                    <button
+                                        name="intent"
+                                        value="deleteSelf"
+                                        type="submit"
+                                        disabled={busy}
+                                    >
+                                        delete account
+                                    </button>
+                                </Form>
+                            </>
+                        )}
                     </>
                 )}
             </div>

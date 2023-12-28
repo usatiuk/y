@@ -50,3 +50,7 @@ export async function getPostsByAuthorUsername(
         PostToArrResp,
     );
 }
+
+export async function getAllPost(): Promise<TPostToArrResp> {
+    return fetchJSONAuth("/post", "GET", PostToArrResp);
+}

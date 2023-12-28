@@ -36,6 +36,10 @@ export async function deleteSelf(): Promise<TNoContentToResp> {
     return fetchJSONAuth("/person/self", "DELETE", NoContentToResp);
 }
 
+export async function deleteUser(uuid: string): Promise<TNoContentToResp> {
+    return fetchJSONAuth("/person/by-uuid/" + uuid, "DELETE", NoContentToResp);
+}
+
 export async function getPersonByUuid(uuid: string): Promise<TPersonToResp> {
     return fetchJSONAuth("/person/by-uuid/" + uuid, "GET", PersonToResp);
 }
