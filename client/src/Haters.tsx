@@ -109,7 +109,10 @@ export function Haters() {
             author: p.authorUsername,
         });
     });
+    const uuidToUsername: Record<string, string> = {};
 
+    data.persons.forEach((p) => (uuidToUsername[p.uuid] = p.username));
+    console.log(uuidToUsername);
     console.log(foundU);
 
     const foundUArr = Array.from(foundU);
@@ -137,13 +140,14 @@ export function Haters() {
                                     if (isError(e)) {
                                         setDeleted((old) => [
                                             ...old,
-                                            `error deleting user with uuid ${u}: ` +
+                                            `error deleting user ${uuidToUsername[u]}: ` +
                                                 e.errors.join(" "),
                                         ]);
                                     } else {
                                         setDeleted((old) => [
                                             ...old,
-                                            "deleted user with id: " + u,
+                                            "deleted user: " +
+                                                uuidToUsername[u],
                                         ]);
                                     }
                                     deluser(rest);
@@ -151,7 +155,7 @@ export function Haters() {
                                 .catch(() => {
                                     setDeleted((old) => [
                                         ...old,
-                                        `error deleting user with uuid ${u}`,
+                                        `error deleting user ${uuidToUsername[u]}`,
                                     ]);
                                 });
                         };
@@ -159,9 +163,9 @@ export function Haters() {
                         deluser(foundUArr);
                     }}
                 >
-                    delete all users
+                    delete all found users
                 </button>
-                <div>
+                <div className={"delResults"}>
                     {deleted.map((d) => (
                         <span>{d}</span>
                     ))}

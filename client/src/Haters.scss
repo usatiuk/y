@@ -9,7 +9,17 @@
   .tools {
     display: flex;
     flex-direction: column;
-    max-width: 10rem;
+    max-width: 20rem;
+
+    > * {
+      margin-top: 0.2rem;
+    }
+
+    .delResults {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   .found {
