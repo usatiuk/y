@@ -127,7 +127,11 @@ export function Haters() {
                 <button
                     onClick={(e) => {
                         e.preventDefault();
-                        foundUArr.forEach((u) =>
+
+                        const deluser = (who: string[]) => {
+                            if (who.length == 0) return;
+                            const u = who[0];
+                            const rest = who.slice(1);
                             deleteUser(u)
                                 .then((e) => {
                                     if (isError(e)) {
@@ -142,14 +146,17 @@ export function Haters() {
                                             "deleted user with id: " + u,
                                         ]);
                                     }
+                                    deluser(rest);
                                 })
-                                .catch((e) => {
+                                .catch(() => {
                                     setDeleted((old) => [
                                         ...old,
                                         `error deleting user with uuid ${u}`,
                                     ]);
-                                }),
-                        );
+                                });
+                        };
+
+                        deluser(foundUArr);
                     }}
                 >
                     delete all users
