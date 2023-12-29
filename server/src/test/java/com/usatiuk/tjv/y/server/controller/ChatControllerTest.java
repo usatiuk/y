@@ -40,7 +40,7 @@ public class ChatControllerTest extends DemoDataDbTest {
 
         Assertions.assertEquals("chatnew", toResponse.name());
         Assertions.assertEquals(person1.getUuid(), toResponse.creatorUuid());
-        Assertions.assertIterableEquals(Stream.of(person1, person2).map(personMapper::makeDto).toList(), toResponse.members());
+        Assertions.assertEquals(2, toResponse.memberCount());
         Assertions.assertTrue(chatRepository.findByName("chatnew").isPresent());
     }
 
