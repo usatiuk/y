@@ -1,6 +1,6 @@
 package com.usatiuk.tjv.y.server.controller;
 
-import com.usatiuk.tjv.y.server.dto.PersonSignupTo;
+import com.usatiuk.tjv.y.server.dto.PersonCreateTo;
 import com.usatiuk.tjv.y.server.dto.PersonTo;
 import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.entity.Chat;
@@ -38,7 +38,7 @@ public class PersonController {
     }
 
     @PostMapping
-    public PersonTo signup(@RequestBody PersonSignupTo signupRequest) throws UserAlreadyExistsException {
+    public PersonTo signup(@RequestBody PersonCreateTo signupRequest) throws UserAlreadyExistsException {
         Person toCreate = new Person();
         toCreate.setUsername(signupRequest.username())
                 .setPassword(signupRequest.password())
@@ -78,11 +78,11 @@ public class PersonController {
     }
 
     @PatchMapping(path = "/self")
-    public PersonTo update(Authentication authentication, @RequestBody PersonSignupTo personSignupTo) {
+    public PersonTo update(Authentication authentication, @RequestBody PersonCreateTo personCreateTo) {
         var person = personService.readById(authentication.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        person.setUsername(personSignupTo.username())
-                .setFullName(personSignupTo.fullName());
-        if (!personSignupTo.password().isEmpty()) person.setPassword(passwordEncoder.encode(personSignupTo.password()));
+        person.setUsername(personCreateTo.username())
+                .setFullName(personCreateTo.fullName());
+        if (!personCreateTo.password().isEmpty()) person.setPassword(passwordEncoder.encode(personCreateTo.password()));
         personService.update(person);
         return personMapper.makeDto(person);
     }

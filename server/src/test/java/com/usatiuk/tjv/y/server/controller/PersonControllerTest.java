@@ -1,6 +1,6 @@
 package com.usatiuk.tjv.y.server.controller;
 
-import com.usatiuk.tjv.y.server.dto.PersonSignupTo;
+import com.usatiuk.tjv.y.server.dto.PersonCreateTo;
 import com.usatiuk.tjv.y.server.dto.PersonTo;
 import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
@@ -24,7 +24,7 @@ public class PersonControllerTest extends DemoDataDbTest {
     @Test
     void shouldSignUp() {
         var response = restTemplate.exchange(addr + "/person", HttpMethod.POST,
-                new HttpEntity<>(new PersonSignupTo("usernew", "full name", "pass")),
+                new HttpEntity<>(new PersonCreateTo("usernew", "full name", "pass")),
                 PersonTo.class);
 
         Assertions.assertNotNull(response);
