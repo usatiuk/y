@@ -56,6 +56,10 @@ export async function getFollowing(): Promise<TPersonToArrResp> {
     return fetchJSONAuth("/person/following", "GET", PersonToArrResp);
 }
 
+export async function getFollowers(): Promise<TPersonToArrResp> {
+    return fetchJSONAuth("/person/followers", "GET", PersonToArrResp);
+}
+
 export async function getPersonByUsername(
     username: string,
 ): Promise<TPersonToResp> {

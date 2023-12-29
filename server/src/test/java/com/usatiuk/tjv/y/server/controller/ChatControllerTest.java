@@ -109,7 +109,7 @@ public class ChatControllerTest extends DemoDataDbTest {
 
 
     @Test
-    void shouldNotChatUnauthorized() {
+    void shouldNotGetChatUnauthorized() {
         var response = restTemplate.exchange(addr + "/chat/by-id/" + chat1.getId(), HttpMethod.GET,
                 new HttpEntity<>(createAuthHeaders(person3Auth)),
                 ErrorTo.class);

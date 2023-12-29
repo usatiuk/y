@@ -9,6 +9,7 @@ export function ProfileCard({
     actions,
     alreadyFollowing,
     isAdmin,
+    isFollower,
 }: {
     username: string;
     fullName: string;
@@ -16,6 +17,7 @@ export function ProfileCard({
     actions: boolean;
     alreadyFollowing: boolean;
     isAdmin: boolean;
+    isFollower: boolean;
 }) {
     const homeContext = useHomeContext();
 
@@ -85,6 +87,7 @@ export function ProfileCard({
                             </button>
                         </Form>
                     ))}
+                {isFollower && <span>follows you</span>}
             </div>
         </div>
     );

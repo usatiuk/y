@@ -2,12 +2,14 @@ package com.usatiuk.tjv.y.server.controller;
 
 import com.usatiuk.tjv.y.server.dto.TokenResponseTo;
 import com.usatiuk.tjv.y.server.entity.Chat;
+import com.usatiuk.tjv.y.server.entity.Message;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.entity.Post;
 import com.usatiuk.tjv.y.server.repository.ChatRepository;
+import com.usatiuk.tjv.y.server.repository.MessageRepository;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
 import com.usatiuk.tjv.y.server.repository.PostRepository;
-import com.usatiuk.tjv.y.server.service.TokenService;
+import com.usatiuk.tjv.y.server.security.JwtTokenService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +37,15 @@ public abstract class DemoDataDbTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private TokenService tokenService;
+    private JwtTokenService jwtTokenService;
     @Autowired
     private PersonRepository personRepository;
     @Autowired
     private PostRepository postRepository;
     @Autowired
     private ChatRepository chatRepository;
+    @Autowired
+    private MessageRepository messageRepository;
 
     protected static final String person1Password = "p1p";
     protected Person person1;
@@ -59,6 +63,11 @@ public abstract class DemoDataDbTest {
     protected Chat chat1;
     protected Chat chat2;
 
+    protected Message message1;
+    protected Message message2;
+    protected Message message3;
+    protected Message message4;
+
     protected HttpHeaders createAuthHeaders(TokenResponseTo personAuth) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -74,20 +83,20 @@ public abstract class DemoDataDbTest {
                         .setUsername("person1")
                         .setFullName("Person 1")
                         .setPassword(passwordEncoder.encode(person1Password)));
-        person1Auth = new TokenResponseTo(tokenService.generateToken(person1.getUuid()));
+        person1Auth = new TokenResponseTo(jwtTokenService.generateToken(person1.getUuid()));
         person2 = personRepository.save(
                 new Person()
                         .setUsername("person2")
                         .setFullName("Person 2")
                         .setPassword(passwordEncoder.encode(person2Password)).setFollowing(List.of(person1)));
-        person2Auth = new TokenResponseTo(tokenService.generateToken(person2.getUuid()));
+        person2Auth = new TokenResponseTo(jwtTokenService.generateToken(person2.getUuid()));
         person3 = personRepository.save(
                 new Person()
                         .setUsername("person3")
                         .setFullName("Person 3")
                         .setPassword(passwordEncoder.encode(person3Password))
                         .setFollowing(List.of(person2, person1)));
-        person3Auth = new TokenResponseTo(tokenService.generateToken(person3.getUuid()));
+        person3Auth = new TokenResponseTo(jwtTokenService.generateToken(person3.getUuid()));
 
         post1 = postRepository.save(new Post().setAuthor(person1).setText("post 1"));
         post2 = postRepository.save(new Post().setAuthor(person2).setText("post 2"));
@@ -102,12 +111,17 @@ public abstract class DemoDataDbTest {
                         .setCreator(person3)
                         .setMembers(List.of(person2, person3))
                         .setName("Chat 1"));
+
+        message1 = messageRepository.save(new Message().setAuthor(person1).setChat(chat1).setContents("message 1"));
+        message2 = messageRepository.save(new Message().setAuthor(person2).setChat(chat1).setContents("message2"));
+        message3 = messageRepository.save(new Message().setAuthor(person2).setChat(chat2).setContents("message 3"));
+        message4 = messageRepository.save(new Message().setAuthor(person3).setChat(chat2).setContents("message 4"));
     }
 
     @AfterEach
     void erase() {
         assert !TestTransaction.isActive();
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "person_follows", "chat_person", "post", "chat", "message", "person");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "person_follows", "chat_person", "post", "message", "chat", "person");
     }
 
 }

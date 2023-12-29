@@ -1,10 +1,8 @@
-package com.usatiuk.tjv.y.server.service;
+package com.usatiuk.tjv.y.server.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,28 +14,25 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
-public class TokenServiceImpl implements TokenService {
-    private static final Duration JWT_EXPIRY = Duration.ofMinutes(20);
-
+public class JwtTokenService {
     private final SecretKey key;
+    private final Duration jwtExpiry;
 
-    public TokenServiceImpl(@Value("${jwt.secret}") String secret) {
-        // FIXME:
+    public JwtTokenService(@Value("${jwt.secret}") String secret, @Value("${jwt.expiryMinutes}") Long expiry) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.jwtExpiry = Duration.ofMinutes(expiry);
     }
 
-    @Override
     public String generateToken(String personUuid) {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(personUuid)
-                .expiration(Date.from(now.plus(JWT_EXPIRY)))
+                .expiration(Date.from(now.plus(jwtExpiry)))
                 .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
 
-    @Override
-    public Optional<String> parseToken(String token) {
+    public Optional<String> getPersonUuidFromToken(String token) {
         try {
             Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
             if (claims.getExpiration().before(new Date())) return Optional.empty();
@@ -46,4 +41,5 @@ public class TokenServiceImpl implements TokenService {
             return Optional.empty();
         }
     }
+
 }

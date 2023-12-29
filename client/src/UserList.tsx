@@ -14,8 +14,8 @@ export function UserList() {
         return <div>Error</div>;
     }
 
-    const { people, following } = loaderData;
-    if (isError(following) || isError(people)) {
+    const { people, following, followers } = loaderData;
+    if (isError(following) || isError(people) || isError(followers)) {
         return <div>Error</div>;
     }
     return (
@@ -32,6 +32,7 @@ export function UserList() {
                         alreadyFollowing={following.some(
                             (f) => f.uuid == u.uuid,
                         )}
+                        isFollower={followers.some((f) => f.uuid == u.uuid)}
                     />
                 );
             })}

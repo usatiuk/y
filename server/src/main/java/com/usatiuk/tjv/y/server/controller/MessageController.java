@@ -3,22 +3,15 @@ package com.usatiuk.tjv.y.server.controller;
 import com.usatiuk.tjv.y.server.dto.MessageCreateTo;
 import com.usatiuk.tjv.y.server.dto.MessageTo;
 import com.usatiuk.tjv.y.server.dto.converters.MessageMapper;
-import com.usatiuk.tjv.y.server.entity.Message;
-import com.usatiuk.tjv.y.server.entity.Person;
-import com.usatiuk.tjv.y.server.security.UserRoles;
 import com.usatiuk.tjv.y.server.service.ChatService;
 import com.usatiuk.tjv.y.server.service.MessageService;
 import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Objects;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.Collection;
 
 @RestController
 @RequestMapping(value = "/message", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,54 +29,29 @@ public class MessageController {
     }
 
     @GetMapping(path = "/by-chat/{chatTd}")
-    public Stream<MessageTo> get(Authentication authentication, @PathVariable Long chatTd) {
-        var chat = chatService.readById(chatTd).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        var userRef = entityManager.getReference(Person.class, authentication.getName());
-        if (!chat.getMembers().contains(userRef))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
-
-        return chat.getMessages().stream().map(messageMapper::makeDto);
+    public Collection<MessageTo> get(Authentication authentication, @PathVariable Long chatTd) {
+        return messageService.getByChat(authentication, chatTd);
     }
 
     @PostMapping(path = "/by-chat/{chatId}")
     public MessageTo post(Authentication authentication, @PathVariable Long chatId, @RequestBody MessageCreateTo messageCreateTo) {
-        var chat = chatService.readById(chatId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        var userRef = entityManager.getReference(Person.class, authentication.getName());
-        if (!chat.getMembers().contains(userRef))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
-
-        Message message = new Message().setChat(chat).setAuthor(userRef).setContents(messageCreateTo.contents());
-        messageService.create(message);
-        return messageMapper.makeDto(message);
+        return messageService.addToChat(authentication, chatId, messageCreateTo);
     }
 
     @PatchMapping(path = "/by-id/{id}")
     public MessageTo update(Authentication authentication, @PathVariable long id, @RequestBody MessageCreateTo messageCreateTo) {
-        var message = messageService.readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!Objects.equals(message.getAuthor().getUuid(), authentication.getName()))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        message.setContents(messageCreateTo.contents());
-        messageService.update(message);
-        return messageMapper.makeDto(message);
+        return messageService.update(authentication, id, messageCreateTo);
     }
 
     @DeleteMapping(path = "/by-id/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(Authentication authentication, @PathVariable long id) {
-        var read = messageService.readById(id);
-        if (read.isEmpty()) return;
-        if (!Objects.equals(read.get().getAuthor().getId(), authentication.getName())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-        messageService.deleteById(id);
+        messageService.delete(authentication, id);
     }
 
     @GetMapping
-    public Stream<MessageTo> getAll(Authentication authentication) {
-        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
-        return StreamSupport.stream(messageService.readAll().spliterator(), false).map(messageMapper::makeDto);
+    public Collection<MessageTo> getAll(Authentication authentication) {
+        return messageService.readAll(authentication);
     }
 
 

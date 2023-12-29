@@ -31,7 +31,7 @@ export async function getPostsByAuthorUuid(
     author: string,
 ): Promise<TPostToArrResp> {
     return fetchJSONAuth(
-        `/post/by-author-uuid?author=${author}`,
+        `/post/by-author-uuid/${author}`,
         "GET",
         PostToArrResp,
     );
@@ -45,7 +45,7 @@ export async function getPostsByAuthorUsername(
     author: string,
 ): Promise<TPostToArrResp> {
     return fetchJSONAuth(
-        `/post/by-author-username?author=${author}`,
+        `/post/by-author-username/${author}`,
         "GET",
         PostToArrResp,
     );

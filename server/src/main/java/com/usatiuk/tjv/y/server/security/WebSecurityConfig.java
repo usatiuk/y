@@ -60,7 +60,7 @@ public class WebSecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/post/*")).permitAll()
+                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/post/**")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/post*")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/person")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/person")).permitAll()
@@ -74,7 +74,6 @@ public class WebSecurityConfig {
                 .exceptionHandling(c -> c.authenticationEntryPoint(authenticationEntryPoint))
                 .build();
     }
-
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

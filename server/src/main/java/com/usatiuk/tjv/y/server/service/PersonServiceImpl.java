@@ -1,12 +1,15 @@
 package com.usatiuk.tjv.y.server.service;
 
+import com.usatiuk.tjv.y.server.dto.PersonCreateTo;
+import com.usatiuk.tjv.y.server.dto.PersonTo;
+import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
+import com.usatiuk.tjv.y.server.entity.Chat;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
 import com.usatiuk.tjv.y.server.security.UserRoles;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
 import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
 import jakarta.persistence.EntityManager;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,36 +18,41 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
-public class PersonServiceImpl extends CrudServiceImpl<Person, String> implements PersonService {
+public class PersonServiceImpl implements PersonService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final EntityManager entityManager;
+    private final PersonMapper personMapper;
 
     public PersonServiceImpl(PersonRepository personRepository,
-                             PasswordEncoder passwordEncoder, EntityManager entityManager) {
+                             PasswordEncoder passwordEncoder, EntityManager entityManager, PersonMapper personMapper) {
         this.personRepository = personRepository;
         this.passwordEncoder = passwordEncoder;
         this.entityManager = entityManager;
+        this.personMapper = personMapper;
     }
 
     @Override
-    protected CrudRepository<Person, String> getRepository() {
-        return personRepository;
-    }
-
-    @Override
-    public Person signup(Person person) throws UserAlreadyExistsException {
-        if (personRepository.existsByUsername(person.getUsername()))
+    public PersonTo signup(PersonCreateTo signupRequest) {
+        if (personRepository.existsByUsername(signupRequest.username()))
             throw new UserAlreadyExistsException();
 
-        person.setPassword(passwordEncoder.encode(person.getPassword()));
+        Person toCreate = new Person();
 
-        if (personRepository.findByAdminIsTrue().isEmpty()) person.setAdmin(true);
+        toCreate.setUsername(signupRequest.username())
+                .setPassword(signupRequest.password())
+                .setFullName(signupRequest.fullName());
 
-        return create(person);
+        toCreate.setPassword(passwordEncoder.encode(signupRequest.password()));
+
+        if (personRepository.findByAdminIsTrue().isEmpty()) toCreate.setAdmin(true);
+
+        return personMapper.makeDto(personRepository.save(toCreate));
     }
 
     @Override
@@ -57,36 +65,90 @@ public class PersonServiceImpl extends CrudServiceImpl<Person, String> implement
     }
 
     @Override
-    public Optional<Person> readByUsername(String username) {
-        return personRepository.findByUsername(username);
+    public PersonTo readByUsername(String username) {
+        return personMapper.makeDto(personRepository.findByUsername(username).orElseThrow(UserNotFoundException::new));
     }
 
     @Override
-    public Collection<Person> getFollowers(String uuid) throws UserNotFoundException {
-        return personRepository.findById(uuid).orElseThrow(UserNotFoundException::new).getFollowers();
+    public PersonTo readByUuid(String uuid) {
+        return personMapper.makeDto(personRepository.findById(uuid).orElseThrow(UserNotFoundException::new));
     }
 
     @Override
-    public Collection<Person> getFollowing(String uuid) throws UserNotFoundException {
-        return personRepository.findById(uuid).orElseThrow(UserNotFoundException::new).getFollowing();
+    public PersonTo readSelf(Authentication authentication) {
+        return readByUuid(authentication.getName());
     }
 
     @Override
-    public void addFollower(String follower, String followee) throws UserNotFoundException {
-        var person = personRepository.findById(follower).orElseThrow(UserNotFoundException::new);
+    public PersonTo update(Authentication authentication, PersonCreateTo person) {
+        var found = personRepository.findById(authentication.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        found.setUsername(person.username())
+                .setFullName(person.fullName());
+        if (!person.password().isEmpty()) found.setPassword(passwordEncoder.encode(person.password()));
+        personRepository.save(found);
+        return personMapper.makeDto(found);
+    }
+
+    private void deleteByUuid(String uuid) {
+        var person = personRepository.findById(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        for (Chat c : person.getChats()) {
+            c.getMembers().remove(person);
+        }
+
+        for (Person p : person.getFollowers()) {
+            p.getFollowing().remove(person);
+            personRepository.save(p);
+        }
+
+        personRepository.delete(person);
+    }
+
+    @Override
+    public void deleteSelf(Authentication authentication) {
+        deleteByUuid(authentication.getName());
+    }
+
+    @Override
+    public void deleteByUuid(Authentication authentication, String uuid) {
+        if ((!Objects.equals(authentication.getName(), uuid)) &&
+                !authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        deleteByUuid(uuid);
+    }
+
+    @Override
+    public Collection<PersonTo> readAll() {
+        return StreamSupport.stream(personRepository.findAll().spliterator(), false).map(personMapper::makeDto).toList();
+    }
+
+    @Override
+    public Collection<PersonTo> getFollowers(Authentication authentication) {
+        return personRepository.findById(authentication.getName()).orElseThrow(UserNotFoundException::new)
+                .getFollowers().stream().map(personMapper::makeDto).toList();
+    }
+
+    @Override
+    public Collection<PersonTo> getFollowing(Authentication authentication) {
+        return personRepository.findById(authentication.getName()).orElseThrow(UserNotFoundException::new)
+                .getFollowing().stream().map(personMapper::makeDto).toList();
+    }
+
+    @Override
+    public void addFollower(Authentication authentication, String followee) {
+        var person = personRepository.findById(authentication.getName()).orElseThrow(UserNotFoundException::new);
         person.getFollowing().add(entityManager.getReference(Person.class, followee));
         personRepository.save(person);
     }
 
     @Override
-    public void removeFollower(String follower, String followee) throws UserNotFoundException {
-        var person = personRepository.findById(follower).orElseThrow(UserNotFoundException::new);
+    public void removeFollower(Authentication authentication, String followee) {
+        var person = personRepository.findById(authentication.getName()).orElseThrow(UserNotFoundException::new);
         person.getFollowing().remove(entityManager.getReference(Person.class, followee));
         personRepository.save(person);
     }
 
     @Override
-    public void addAdmin(Authentication caller, String uuid) throws UserNotFoundException {
+    public void addAdmin(Authentication caller, String uuid) {
         if (!caller.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
@@ -96,7 +158,7 @@ public class PersonServiceImpl extends CrudServiceImpl<Person, String> implement
     }
 
     @Override
-    public void removeAdmin(Authentication caller, String uuid) throws UserNotFoundException {
+    public void removeAdmin(Authentication caller, String uuid) {
         if (!caller.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
 
@@ -109,7 +171,7 @@ public class PersonServiceImpl extends CrudServiceImpl<Person, String> implement
     }
 
     @Override
-    public Collection<Person> getAdmins() {
-        return personRepository.findByAdminIsTrue();
+    public Collection<PersonTo> getAdmins() {
+        return personRepository.findByAdminIsTrue().stream().map(personMapper::makeDto).toList();
     }
 }

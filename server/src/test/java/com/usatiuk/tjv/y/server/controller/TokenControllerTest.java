@@ -2,7 +2,7 @@ package com.usatiuk.tjv.y.server.controller;
 
 import com.usatiuk.tjv.y.server.dto.TokenRequestTo;
 import com.usatiuk.tjv.y.server.dto.TokenResponseTo;
-import com.usatiuk.tjv.y.server.service.TokenService;
+import com.usatiuk.tjv.y.server.security.JwtTokenService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 public class TokenControllerTest extends DemoDataDbTest {
 
     @Autowired
-    private TokenService tokenService;
+    private JwtTokenService jwtTokenService;
 
     @Test
     void shouldLogin() {
@@ -26,7 +26,7 @@ public class TokenControllerTest extends DemoDataDbTest {
         TokenResponseTo parsedResponse = response.getBody();
         Assertions.assertNotNull(parsedResponse);
 
-        Assertions.assertTrue(tokenService.parseToken(parsedResponse.token()).isPresent());
+        Assertions.assertTrue(jwtTokenService.getPersonUuidFromToken(parsedResponse.token()).isPresent());
     }
 
 

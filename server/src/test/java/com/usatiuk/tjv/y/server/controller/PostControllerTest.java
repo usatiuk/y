@@ -63,7 +63,7 @@ public class PostControllerTest extends DemoDataDbTest {
 
     @Test
     void shouldGetByAuthor() {
-        var response = restTemplate.exchange(addr + "/post/by-author-uuid?author=" + person1.getUuid(), HttpMethod.GET,
+        var response = restTemplate.exchange(addr + "/post/by-author-uuid/" + person1.getUuid(), HttpMethod.GET,
                 HttpEntity.EMPTY, PostTo[].class);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());

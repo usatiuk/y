@@ -1,5 +1,6 @@
 import {
     getAllPerson,
+    getFollowers,
     getFollowing,
     getPersonByUsername,
     getSelf,
@@ -36,7 +37,11 @@ export async function homeLoader() {
 }
 
 export async function userListLoader() {
-    return { people: await getAllPerson(), following: await getFollowing() };
+    return {
+        people: await getAllPerson(),
+        following: await getFollowing(),
+        followers: await getFollowers(),
+    };
 }
 
 export async function profileLoader({

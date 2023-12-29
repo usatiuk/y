@@ -1,6 +1,5 @@
 package com.usatiuk.tjv.y.server.security;
 
-import com.usatiuk.tjv.y.server.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,12 +17,12 @@ import java.util.Optional;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-    private final TokenService tokenService;
-    private final JwtUserDetailsService jwtUserDetailsService;
+    private final JwtTokenService jwtTokenService;
+    private final UserDetailsService userDetailsService;
 
-    public JwtRequestFilter(TokenService tokenService, JwtUserDetailsService jwtUserDetailsService) {
-        this.tokenService = tokenService;
-        this.jwtUserDetailsService = jwtUserDetailsService;
+    public JwtRequestFilter(JwtTokenService jwtTokenService, UserDetailsService userDetailsService) {
+        this.jwtTokenService = jwtTokenService;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -36,13 +35,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        Optional<String> userUuid = tokenService.parseToken(token);
+        Optional<String> userUuid = jwtTokenService.getPersonUuidFromToken(token);
         if (userUuid.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userUuid.get());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userUuid.get());
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());

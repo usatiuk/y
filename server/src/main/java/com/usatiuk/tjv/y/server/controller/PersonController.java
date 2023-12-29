@@ -3,9 +3,6 @@ package com.usatiuk.tjv.y.server.controller;
 import com.usatiuk.tjv.y.server.dto.PersonCreateTo;
 import com.usatiuk.tjv.y.server.dto.PersonTo;
 import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
-import com.usatiuk.tjv.y.server.entity.Chat;
-import com.usatiuk.tjv.y.server.entity.Person;
-import com.usatiuk.tjv.y.server.security.UserRoles;
 import com.usatiuk.tjv.y.server.service.ChatService;
 import com.usatiuk.tjv.y.server.service.PersonService;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
@@ -13,14 +10,10 @@ import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.Collection;
 
 @RestController
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,103 +32,60 @@ public class PersonController {
 
     @PostMapping
     public PersonTo signup(@RequestBody PersonCreateTo signupRequest) throws UserAlreadyExistsException {
-        Person toCreate = new Person();
-        toCreate.setUsername(signupRequest.username())
-                .setPassword(signupRequest.password())
-                .setFullName(signupRequest.fullName());
-
-        Person created = personService.signup(toCreate);
-
-        return personMapper.makeDto(created);
+        return personService.signup(signupRequest);
     }
 
     @GetMapping(path = "/by-username/{username}")
     public PersonTo getByUsername(@PathVariable String username) throws UserNotFoundException {
-        Optional<Person> found = personService.readByUsername(username);
-
-        if (found.isEmpty()) throw new UserNotFoundException();
-
-        return personMapper.makeDto(found.get());
+        return personService.readByUsername(username);
     }
 
     @GetMapping(path = "/by-uuid/{uuid}")
     public PersonTo getByUuid(@PathVariable String uuid) throws UserNotFoundException {
-        Optional<Person> found = personService.readById(uuid);
-
-        if (found.isEmpty()) throw new UserNotFoundException();
-
-        return personMapper.makeDto(found.get());
+        return personService.readByUuid(uuid);
     }
-
 
     @GetMapping(path = "/self")
     public PersonTo getSelf(Authentication authentication) throws UserNotFoundException {
-        Optional<Person> found = personService.readById(authentication.getName());
-
-        if (found.isEmpty()) throw new UserNotFoundException();
-
-        return personMapper.makeDto(found.get());
+        return personService.readSelf(authentication);
     }
 
     @PatchMapping(path = "/self")
     public PersonTo update(Authentication authentication, @RequestBody PersonCreateTo personCreateTo) {
-        var person = personService.readById(authentication.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        person.setUsername(personCreateTo.username())
-                .setFullName(personCreateTo.fullName());
-        if (!personCreateTo.password().isEmpty()) person.setPassword(passwordEncoder.encode(personCreateTo.password()));
-        personService.update(person);
-        return personMapper.makeDto(person);
+        return personService.update(authentication, personCreateTo);
     }
 
     @DeleteMapping(path = "/self")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(Authentication authentication) {
-        var person = personService.readById(authentication.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        for (Chat c : person.getChats()) {
-            c.getMembers().remove(person);
-            chatService.update(c);
-        }
-        personService.deleteById(authentication.getName());
+        personService.deleteSelf(authentication);
     }
 
     @DeleteMapping(path = "/by-uuid/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteByUuid(Authentication authentication, @PathVariable String uuid) throws UserNotFoundException {
-        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
-        var person = personService.readById(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        for (Chat c : person.getChats()) {
-            c.getMembers().remove(person);
-            chatService.update(c);
-        }
-        for (Person p : person.getFollowers()) {
-            p.getFollowing().remove(person);
-            personService.update(p);
-        }
-
-        personService.deleteById(person.getUuid());
+        personService.deleteByUuid(authentication, uuid);
     }
 
 
     @GetMapping
-    public Stream<PersonTo> getAll() throws UserNotFoundException {
-        return StreamSupport.stream(personService.readAll().spliterator(), false).map(personMapper::makeDto);
+    public Collection<PersonTo> getAll() throws UserNotFoundException {
+        return personService.readAll();
     }
 
     @GetMapping(path = "/followers")
-    public Stream<PersonTo> getFollowers(Authentication authentication) throws UserNotFoundException {
-        return personService.getFollowers(authentication.getName()).stream().map(personMapper::makeDto);
+    public Collection<PersonTo> getFollowers(Authentication authentication) throws UserNotFoundException {
+        return personService.getFollowers(authentication);
     }
 
     @GetMapping(path = "/following")
-    public Stream<PersonTo> getFollowing(Authentication authentication) throws UserNotFoundException {
-        return personService.getFollowing(authentication.getName()).stream().map(personMapper::makeDto);
+    public Collection<PersonTo> getFollowing(Authentication authentication) throws UserNotFoundException {
+        return personService.getFollowing(authentication);
     }
 
     @GetMapping(path = "/admins")
-    public Stream<PersonTo> getAdmins() {
-        return personService.getAdmins().stream().map(personMapper::makeDto);
+    public Collection<PersonTo> getAdmins() {
+        return personService.getAdmins();
     }
 
     @PutMapping(path = "/admins/{uuid}")
@@ -150,17 +100,16 @@ public class PersonController {
         personService.removeAdmin(authentication, uuid);
     }
 
-
     @PutMapping(path = "/following/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addFollowing(Authentication authentication, @PathVariable String uuid) throws UserNotFoundException {
-        personService.addFollower(authentication.getName(), uuid);
+        personService.addFollower(authentication, uuid);
     }
 
     @DeleteMapping(path = "/following/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFollowing(Authentication authentication, @PathVariable String uuid) throws UserNotFoundException {
-        personService.removeFollower(authentication.getName(), uuid);
+        personService.removeFollower(authentication, uuid);
     }
 
 }

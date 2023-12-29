@@ -9,7 +9,6 @@ import com.usatiuk.tjv.y.server.entity.Chat;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.ChatRepository;
 import jakarta.persistence.EntityManager;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Service
-public class ChatServiceImpl extends CrudServiceImpl<Chat, Long> implements ChatService {
+public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
     private final ChatMapper chatMapper;
@@ -34,12 +33,6 @@ public class ChatServiceImpl extends CrudServiceImpl<Chat, Long> implements Chat
         this.personMapper = personMapper;
         this.entityManager = entityManager;
     }
-
-    @Override
-    protected CrudRepository<Chat, Long> getRepository() {
-        return chatRepository;
-    }
-
 
     @Override
     public ChatTo create(Authentication authentication, ChatCreateTo chatCreateTo) {
@@ -63,7 +56,7 @@ public class ChatServiceImpl extends CrudServiceImpl<Chat, Long> implements Chat
 
     @Override
     public ChatTo update(Authentication authentication, Long id, ChatCreateTo chatCreateTo) {
-        var chat = readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        var chat = chatRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
         if (!Objects.equals(chat.getCreator().getUuid(), authentication.getName()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't creator of the chat");
 
@@ -89,7 +82,7 @@ public class ChatServiceImpl extends CrudServiceImpl<Chat, Long> implements Chat
 
     @Override
     public ChatTo getById(Authentication authentication, Long id) {
-        var chat = readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        var chat = chatRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
         var userRef = entityManager.getReference(Person.class, authentication.getName());
         if (!chat.getMembers().contains(userRef))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
@@ -99,18 +92,25 @@ public class ChatServiceImpl extends CrudServiceImpl<Chat, Long> implements Chat
 
     @Override
     public void deleteById(Authentication authentication, Long id) {
-        var chat = readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        var chat = chatRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
         if (!Objects.equals(chat.getCreator().getUuid(), authentication.getName()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't creator of the chat");
-        deleteById(id);
+        chatRepository.delete(chat);
     }
 
     @Override
     public Collection<PersonTo> getMembers(Authentication authentication, Long id) {
-        var chat = readById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        var chat = chatRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
         var userRef = entityManager.getReference(Person.class, authentication.getName());
         if (!chat.getMembers().contains(userRef))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
         return chat.getMembers().stream().map(personMapper::makeDto).toList();
+    }
+
+    @Override
+    public boolean isMemberOf(String personUuid, Long chatId) {
+        var chat = chatRepository.findById(chatId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        var userRef = entityManager.getReference(Person.class, personUuid);
+        return chat.getMembers().contains(userRef);
     }
 }
