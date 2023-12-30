@@ -37,7 +37,7 @@ public class WebSecurityConfig {
     }
 
     @Component
-    class ErrorAuthenticationEntryPoint implements AuthenticationEntryPoint {
+    static class ErrorAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         private final HandlerExceptionResolver resolver;
 

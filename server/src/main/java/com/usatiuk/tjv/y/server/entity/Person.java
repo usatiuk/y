@@ -31,6 +31,7 @@ public class Person {
     @Size(max = 100, message = "Name can't be longer than 100")
     @NotBlank(message = "Name can't be empty")
     private String fullName;
+
     @NotBlank(message = "Password can't be empty")
     private String password;
 

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -26,6 +27,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 new ErrorTo(ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage), HttpStatus.BAD_REQUEST.value()),
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
+
+    @ExceptionHandler(TransactionSystemException.class)
+    protected ResponseEntity<Object> handleTransactionSystemException(TransactionSystemException ex, WebRequest request) {
+        if (ex.getRootCause() instanceof ConstraintViolationException) {
+            return handleConstraintViolation((ConstraintViolationException) ex.getRootCause(), request);
+        } else {
+            return handleExceptionInternal(ex,
+                    new ErrorTo(List.of("Error"), HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        }
+    }
+
 
     @ExceptionHandler(AuthenticationException.class)
     protected ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex, WebRequest request) {

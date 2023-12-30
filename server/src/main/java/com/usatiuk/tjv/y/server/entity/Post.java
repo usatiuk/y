@@ -25,8 +25,8 @@ public class Post {
     @ManyToOne
     private Person author;
 
-    @NotBlank
     @Lob
+    @NotBlank(message = "Post can't be empty")
     private String text;
 
     @CreationTimestamp

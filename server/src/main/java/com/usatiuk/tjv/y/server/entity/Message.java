@@ -32,6 +32,6 @@ public class Message {
     private Instant createdAt;
 
     @Lob
-    @NotBlank
+    @NotBlank(message = "Message can't be empty")
     private String contents;
 }
