@@ -8,14 +8,11 @@ test:
   script:
     - cd server && ./gradlew test
 
-build:
+container:
   stage: build
-  image: docker:24.0.5
-  services:
-    - docker:24.0.5-dind
+  image: $CI_REGISTRY/ict/images/buildah:latest
   variables:
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
+    - buildah build --squash --tag $IMAGE_TAG .
+    - buildah push $IMAGE_TAG
