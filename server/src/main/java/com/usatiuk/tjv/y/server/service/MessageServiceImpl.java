@@ -7,11 +7,10 @@ import com.usatiuk.tjv.y.server.entity.Chat;
 import com.usatiuk.tjv.y.server.entity.Message;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.MessageRepository;
+import com.usatiuk.tjv.y.server.service.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -47,7 +46,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageTo update(Long id, MessageCreateTo msg) {
-        var message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var message = messageRepository.findById(id).orElseThrow(NotFoundException::new);
         message.setContents(msg.contents());
         messageRepository.save(message);
         return messageMapper.makeDto(message);
@@ -67,7 +66,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public boolean isAuthorOf(String userUuid, Long messageId) {
-        var msg = messageRepository.findById(messageId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        var msg = messageRepository.findById(messageId).orElseThrow(() -> new NotFoundException("Chat not found"));
         return Objects.equals(msg.getAuthor().getUuid(), userUuid);
     }
 }

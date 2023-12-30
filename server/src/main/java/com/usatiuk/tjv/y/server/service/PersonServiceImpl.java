@@ -6,17 +6,16 @@ import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.entity.Chat;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
-import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
-import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
+import com.usatiuk.tjv.y.server.service.exceptions.ConflictException;
+import com.usatiuk.tjv.y.server.service.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -38,7 +37,7 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public PersonTo signup(PersonCreateTo signupRequest) {
         if (personRepository.existsByUsername(signupRequest.username()))
-            throw new UserAlreadyExistsException();
+            throw new ConflictException("User already exists with this username");
 
         Person toCreate = new Person();
 
@@ -64,12 +63,12 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public PersonTo readByUsername(String username) {
-        return personMapper.makeDto(personRepository.findByUsername(username).orElseThrow(UserNotFoundException::new));
+        return personMapper.makeDto(personRepository.findByUsername(username).orElseThrow(NotFoundException::new));
     }
 
     @Override
     public PersonTo readByUuid(String uuid) {
-        return personMapper.makeDto(personRepository.findById(uuid).orElseThrow(UserNotFoundException::new));
+        return personMapper.makeDto(personRepository.findById(uuid).orElseThrow(NotFoundException::new));
     }
 
     @Override
@@ -78,8 +77,13 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @Transactional
     public PersonTo update(Authentication authentication, PersonCreateTo person) {
-        var found = personRepository.findById(authentication.getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var found = personRepository.findById(authentication.getName()).orElseThrow(NotFoundException::new);
+
+        if (!Objects.equals(found.getUsername(), person.username()) && personRepository.existsByUsername(person.username()))
+            throw new ConflictException("User already exists with this username");
+
         found.setUsername(person.username())
                 .setFullName(person.fullName());
         if (!person.password().isEmpty()) found.setPassword(passwordEncoder.encode(person.password()));
@@ -89,7 +93,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Transactional
     public void deleteByUuid(String uuid) {
-        var person = personRepository.findById(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var person = personRepository.findById(uuid).orElseThrow(NotFoundException::new);
         for (Chat c : person.getChats()) {
             c.getMembers().remove(person);
         }
@@ -114,40 +118,40 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Collection<PersonTo> getFollowers(Authentication authentication) {
-        return personRepository.findById(authentication.getName()).orElseThrow(UserNotFoundException::new)
+        return personRepository.findById(authentication.getName()).orElseThrow(NotFoundException::new)
                 .getFollowers().stream().map(personMapper::makeDto).toList();
     }
 
     @Override
     public Collection<PersonTo> getFollowing(Authentication authentication) {
-        return personRepository.findById(authentication.getName()).orElseThrow(UserNotFoundException::new)
+        return personRepository.findById(authentication.getName()).orElseThrow(NotFoundException::new)
                 .getFollowing().stream().map(personMapper::makeDto).toList();
     }
 
     @Override
     public void addFollower(Authentication authentication, String followee) {
-        var person = personRepository.findById(authentication.getName()).orElseThrow(UserNotFoundException::new);
+        var person = personRepository.findById(authentication.getName()).orElseThrow(NotFoundException::new);
         person.getFollowing().add(entityManager.getReference(Person.class, followee));
         personRepository.save(person);
     }
 
     @Override
     public void removeFollower(Authentication authentication, String followee) {
-        var person = personRepository.findById(authentication.getName()).orElseThrow(UserNotFoundException::new);
+        var person = personRepository.findById(authentication.getName()).orElseThrow(NotFoundException::new);
         person.getFollowing().remove(entityManager.getReference(Person.class, followee));
         personRepository.save(person);
     }
 
     @Override
     public void addAdmin(String uuid) {
-        var person = personRepository.findById(uuid).orElseThrow(UserNotFoundException::new);
+        var person = personRepository.findById(uuid).orElseThrow(NotFoundException::new);
         person.setAdmin(true);
         personRepository.save(person);
     }
 
     @Override
     public void removeAdmin(String uuid) {
-        var person = personRepository.findById(uuid).orElseThrow(UserNotFoundException::new);
+        var person = personRepository.findById(uuid).orElseThrow(NotFoundException::new);
         person.setAdmin(false);
         personRepository.save(person);
     }

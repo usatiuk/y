@@ -1,6 +1,10 @@
 package com.usatiuk.tjv.y.server.controller;
 
 import com.usatiuk.tjv.y.server.dto.ErrorTo;
+import com.usatiuk.tjv.y.server.service.exceptions.BadInputException;
+import com.usatiuk.tjv.y.server.service.exceptions.ConflictException;
+import com.usatiuk.tjv.y.server.service.exceptions.NotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
@@ -39,7 +43,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         }
     }
 
-
     @ExceptionHandler(AuthenticationException.class)
     protected ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
         return handleExceptionInternal(ex,
@@ -60,6 +63,35 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 new ErrorTo(List.of(ex.getMessage()), HttpStatus.UNAUTHORIZED.value()),
                 new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
+
+    @ExceptionHandler(BadInputException.class)
+    protected ResponseEntity<Object> handleBadInputException(BadInputException ex, WebRequest request) {
+        return handleExceptionInternal(ex,
+                new ErrorTo(List.of(ex.getMessage()), HttpStatus.BAD_REQUEST.value()),
+                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    protected ResponseEntity<Object> handleConflictException(ConflictException ex, WebRequest request) {
+        return handleExceptionInternal(ex,
+                new ErrorTo(List.of(ex.getMessage()), HttpStatus.CONFLICT.value()),
+                new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    protected ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
+        return handleExceptionInternal(ex,
+                new ErrorTo(List.of(ex.getMessage()), HttpStatus.NOT_FOUND.value()),
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<Object> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
+        return handleExceptionInternal(ex,
+                new ErrorTo(List.of(ex.getMessage()), HttpStatus.NOT_FOUND.value()),
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
 
     @ExceptionHandler(ResponseStatusException.class)
     protected ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {

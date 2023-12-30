@@ -6,11 +6,10 @@ import com.usatiuk.tjv.y.server.dto.converters.PostMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.entity.Post;
 import com.usatiuk.tjv.y.server.repository.PostRepository;
+import com.usatiuk.tjv.y.server.service.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -39,7 +38,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostTo readById(Long id) {
         return postMapper.makeDto(postRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")));
+                .orElseThrow(() -> new NotFoundException("Post not found")));
     }
 
     @Override
@@ -59,7 +58,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostTo updatePost(Long id, PostCreateTo postCreateTo) {
-        var post = postRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        var post = postRepository.findById(id).orElseThrow(NotFoundException::new);
         post.setText(postCreateTo.text());
         postRepository.save(post);
         return postMapper.makeDto(post);
@@ -79,7 +78,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public boolean isAuthorOf(String userUuid, Long postId) {
-        var p = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        var p = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Chat not found"));
         return Objects.equals(p.getAuthor().getUuid(), userUuid);
     }
 }
