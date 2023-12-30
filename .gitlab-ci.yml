@@ -6,7 +6,7 @@ test:
   stage: test
   image: ${CI_REGISTRY}/bi-ido/bi-ido-registry/maven:3.8.6-openjdk-18
   script:
-    - ./server/gradlew test
+    - cd server && ./gradlew test
 
 container:
   stage: build
