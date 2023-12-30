@@ -12,7 +12,7 @@ WORKDIR /usr/src/app/server
 COPY ./server/. .
 RUN ./gradlew clean build && bash -c "rm build/libs/*-plain.jar && mv build/libs/*.jar server.jar"
 
-
+# The best JVM ;)
 FROM azul/prime:17
 
 WORKDIR /usr/src/app
