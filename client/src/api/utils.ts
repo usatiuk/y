@@ -3,7 +3,14 @@
 import { jwtDecode } from "jwt-decode";
 import { isError } from "./dto";
 
-const apiRoot: string = "http://localhost:8080";
+declare const process: {
+    env: {
+        NODE_ENV: string;
+    };
+};
+
+const apiRoot: string =
+    process.env.NODE_ENV == "production" ? "/" : "http://localhost:8080";
 
 let token: string | null;
 

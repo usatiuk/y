@@ -59,6 +59,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/person")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/token")).permitAll()
+                        .requestMatchers(mvc.pattern("/app/**")).permitAll()
                         .requestMatchers(mvc.pattern("/swagger-ui*/**")).permitAll()
                         .requestMatchers(mvc.pattern("/v3/**")).permitAll()
                         .requestMatchers(mvc.pattern("/error")).permitAll()
