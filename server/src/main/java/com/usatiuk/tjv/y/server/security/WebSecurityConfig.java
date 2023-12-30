@@ -63,6 +63,7 @@ public class WebSecurityConfig {
                         .requestMatchers(mvc.pattern("/swagger-ui*/**")).permitAll()
                         .requestMatchers(mvc.pattern("/v3/**")).permitAll()
                         .requestMatchers(mvc.pattern("/error")).permitAll()
+                        .requestMatchers(mvc.pattern("/")).permitAll()
                         .anyRequest().hasAuthority(UserRoles.ROLE_USER.name()))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)

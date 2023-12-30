@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  yapp:
+    build: ./
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - jwt_secret=secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret
+      - spring_datasource_url=jdbc:mariadb://db:3306/yapp
+      - spring_datasource_username=yapp
+      - spring_datasource_password=yappyapp
+    depends_on:
+      db:
+        condition: service_healthy       
+  db:
+    image: mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_USER=yapp 
+      - MYSQL_PASSWORD=yappyapp
+      - MYSQL_DATABASE=yapp
+      - MYSQL_CHARSET=utf8mb4
+      - MYSQL_COLLATION=utf8mb4_general_ci
+    volumes:
+      - ymariadb:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 30s
+      start_interval: 10s
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  ymariadb:

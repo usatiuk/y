@@ -10,7 +10,7 @@ declare const process: {
 };
 
 const apiRoot: string =
-    process.env.NODE_ENV == "production" ? "/" : "http://localhost:8080";
+    process.env.NODE_ENV == "production" ? "" : "http://localhost:8080";
 
 let token: string | null;
 

@@ -5,10 +5,9 @@
   "author": "Stepan Usatiuk",
   "source": "src/index.html",
   "scripts": {
-    "start": "parcel",
-    "build": "parcel build"
+    "start": "parcel --public-url /app",
+    "build": "parcel build --public-url /app"
   },
-  "publicUrl": "/app",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "dependencies": {
     "jwt-decode": "^4.0.0",
