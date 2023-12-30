@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/bin/sh
 
 java -jar server.jar

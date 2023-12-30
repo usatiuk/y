@@ -10,7 +10,7 @@ FROM azul/zulu-openjdk-alpine:17 as server
 
 WORKDIR /usr/src/app/server
 COPY ./server/. .
-RUN ./gradlew clean build && bash -c "rm build/libs/*-plain.jar && mv build/libs/*.jar server.jar"
+RUN ./gradlew clean build && sh -c "rm build/libs/*-plain.jar && mv build/libs/*.jar server.jar"
 
 # The best JVM ;)
 FROM azul/zulu-openjdk-alpine:17
