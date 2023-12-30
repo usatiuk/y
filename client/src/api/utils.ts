@@ -1,6 +1,7 @@
 // import { apiRoot } from "~src/env";
 
 import { jwtDecode } from "jwt-decode";
+import { isError } from "./dto";
 
 const apiRoot: string = "http://localhost:8080";
 
@@ -59,7 +60,11 @@ export async function fetchJSON<T, P extends { parse: (arg: string) => T }>(
     const json = await response.json().catch(() => {
         return {};
     });
-    return parser.parse(json);
+    const parsed = parser.parse(json);
+    if (isError(parsed)) {
+        alert(parsed.errors.join(", "));
+    }
+    return parsed;
 }
 
 export async function fetchJSONAuth<T, P extends { parse: (arg: string) => T }>(
