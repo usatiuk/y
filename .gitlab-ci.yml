@@ -10,15 +10,14 @@ test:
 
 container:
   stage: build
-  image: docker:latest
+  image: $CI_REGISTRY/ict/images/alpine/ci:latest
   variables:
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-  services:
-    - docker:dind
+    BUILDAH_ISOLATION: chroot
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   before_script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - apk add buildah fuse-overlayfs
+    - buildah login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - buildah info
   script:
-    - docker build -t $IMAGE_TAG .
-    - docker push $IMAGE_TAG
+    - buildah build --tag $IMAGE_TAG -f Dockerfile
+    - buildah push --retry 3 $IMAGE_TAG
