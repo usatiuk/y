@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
-@Service
+@Service("chatService")
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
@@ -57,8 +57,6 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatTo update(Authentication authentication, Long id, ChatCreateTo chatCreateTo) {
         var chat = chatRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        if (!Objects.equals(chat.getCreator().getUuid(), authentication.getName()))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't creator of the chat");
 
         if (Arrays.stream(chatCreateTo.memberUuids()).noneMatch(n -> Objects.equals(n, authentication.getName())))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Creator of chat must be its member");
@@ -81,29 +79,20 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatTo getById(Authentication authentication, Long id) {
+    public ChatTo getById(Long id) {
         var chat = chatRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        var userRef = entityManager.getReference(Person.class, authentication.getName());
-        if (!chat.getMembers().contains(userRef))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
-
         return chatMapper.makeDto(chat);
     }
 
     @Override
-    public void deleteById(Authentication authentication, Long id) {
+    public void deleteById(Long id) {
         var chat = chatRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        if (!Objects.equals(chat.getCreator().getUuid(), authentication.getName()))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't creator of the chat");
         chatRepository.delete(chat);
     }
 
     @Override
-    public Collection<PersonTo> getMembers(Authentication authentication, Long id) {
+    public Collection<PersonTo> getMembers(Long id) {
         var chat = chatRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
-        var userRef = entityManager.getReference(Person.class, authentication.getName());
-        if (!chat.getMembers().contains(userRef))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
         return chat.getMembers().stream().map(personMapper::makeDto).toList();
     }
 
@@ -112,5 +101,11 @@ public class ChatServiceImpl implements ChatService {
         var chat = chatRepository.findById(chatId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
         var userRef = entityManager.getReference(Person.class, personUuid);
         return chat.getMembers().contains(userRef);
+    }
+
+    @Override
+    public boolean isCreatorOf(String personUuid, Long chatId) {
+        var chat = chatRepository.findById(chatId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        return Objects.equals(chat.getCreator().getUuid(), personUuid);
     }
 }

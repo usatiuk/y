@@ -17,7 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @ToString
 @Accessors(chain = true)
-public class Message implements EntityWithId<Long> {
+public class Message {
     @Id
     @GeneratedValue
     private Long id;

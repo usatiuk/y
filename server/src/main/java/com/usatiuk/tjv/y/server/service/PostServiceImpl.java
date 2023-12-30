@@ -6,11 +6,9 @@ import com.usatiuk.tjv.y.server.dto.converters.PostMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.entity.Post;
 import com.usatiuk.tjv.y.server.repository.PostRepository;
-import com.usatiuk.tjv.y.server.security.UserRoles;
 import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,7 +16,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
-@Service
+@Service("postService")
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
@@ -60,30 +58,28 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostTo updatePost(Authentication authentication, Long id, PostCreateTo postCreateTo) {
+    public PostTo updatePost(Long id, PostCreateTo postCreateTo) {
         var post = postRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!Objects.equals(post.getAuthor().getUuid(), authentication.getName()))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         post.setText(postCreateTo.text());
         postRepository.save(post);
         return postMapper.makeDto(post);
     }
 
     @Override
-    public void deletePost(Authentication authentication, Long id) {
+    public void deletePost(Long id) {
         var read = postRepository.findById(id);
         if (read.isEmpty()) return;
-        if (!Objects.equals(read.get().getAuthor().getId(), authentication.getName())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
         postRepository.delete(read.get());
     }
 
     @Override
-    public Collection<PostTo> readAll(Authentication authentication) {
-        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
+    public Collection<PostTo> readAll() {
         return StreamSupport.stream(postRepository.findAll().spliterator(), false).map(postMapper::makeDto).toList();
+    }
+
+    @Override
+    public boolean isAuthorOf(String userUuid, Long postId) {
+        var p = postRepository.findById(postId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        return Objects.equals(p.getAuthor().getUuid(), userUuid);
     }
 }

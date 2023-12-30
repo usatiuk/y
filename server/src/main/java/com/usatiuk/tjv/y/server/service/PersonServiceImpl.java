@@ -6,19 +6,17 @@ import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.entity.Chat;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
-import com.usatiuk.tjv.y.server.security.UserRoles;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
 import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -89,32 +87,25 @@ public class PersonServiceImpl implements PersonService {
         return personMapper.makeDto(found);
     }
 
-    private void deleteByUuid(String uuid) {
+    @Transactional
+    public void deleteByUuid(String uuid) {
         var person = personRepository.findById(uuid).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         for (Chat c : person.getChats()) {
             c.getMembers().remove(person);
         }
-
         for (Person p : person.getFollowers()) {
             p.getFollowing().remove(person);
-            personRepository.save(p);
         }
 
         personRepository.delete(person);
     }
 
     @Override
+    @Transactional
     public void deleteSelf(Authentication authentication) {
         deleteByUuid(authentication.getName());
     }
 
-    @Override
-    public void deleteByUuid(Authentication authentication, String uuid) {
-        if ((!Objects.equals(authentication.getName(), uuid)) &&
-                !authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        deleteByUuid(uuid);
-    }
 
     @Override
     public Collection<PersonTo> readAll() {
@@ -148,24 +139,15 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public void addAdmin(Authentication caller, String uuid) {
-        if (!caller.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
+    public void addAdmin(String uuid) {
         var person = personRepository.findById(uuid).orElseThrow(UserNotFoundException::new);
         person.setAdmin(true);
         personRepository.save(person);
     }
 
     @Override
-    public void removeAdmin(Authentication caller, String uuid) {
-        if (!caller.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
+    public void removeAdmin(String uuid) {
         var person = personRepository.findById(uuid).orElseThrow(UserNotFoundException::new);
-        // TODO
-        if (personRepository.findByAdminIsTrue().size() == 1) return;
-
         person.setAdmin(false);
         personRepository.save(person);
     }

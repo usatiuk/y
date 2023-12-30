@@ -7,11 +7,9 @@ import com.usatiuk.tjv.y.server.entity.Chat;
 import com.usatiuk.tjv.y.server.entity.Message;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.MessageRepository;
-import com.usatiuk.tjv.y.server.security.UserRoles;
 import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,34 +17,26 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
-@Service
+@Service("messageService")
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
     private final MessageMapper messageMapper;
-    private final ChatService chatService;
     private final EntityManager entityManager;
 
-    public MessageServiceImpl(MessageRepository messageRepository, MessageMapper messageMapper, ChatService chatService, EntityManager entityManager) {
+    public MessageServiceImpl(MessageRepository messageRepository, MessageMapper messageMapper, EntityManager entityManager) {
         this.messageRepository = messageRepository;
         this.messageMapper = messageMapper;
-        this.chatService = chatService;
         this.entityManager = entityManager;
     }
 
     @Override
-    public Collection<MessageTo> getByChat(Authentication authentication, Long chatId) {
-        if (!chatService.isMemberOf(authentication.getName(), chatId))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
-
+    public Collection<MessageTo> getByChat(Long chatId) {
         return messageRepository.findByChat_Id(chatId).stream().map(messageMapper::makeDto).toList();
     }
 
     @Override
     public MessageTo addToChat(Authentication authentication, Long chatId, MessageCreateTo messageCreateTo) {
-        if (!chatService.isMemberOf(authentication.getName(), chatId))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User isn't member of the chat");
-
         Message message = new Message().setChat(entityManager.getReference(Chat.class, chatId))
                 .setAuthor(entityManager.getReference(Person.class, authentication.getName()))
                 .setContents(messageCreateTo.contents());
@@ -56,30 +46,28 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageTo update(Authentication authentication, Long id, MessageCreateTo msg) {
+    public MessageTo update(Long id, MessageCreateTo msg) {
         var message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!Objects.equals(message.getAuthor().getUuid(), authentication.getName()))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         message.setContents(msg.contents());
         messageRepository.save(message);
         return messageMapper.makeDto(message);
     }
 
     @Override
-    public void delete(Authentication authentication, Long id) {
+    public void delete(Long id) {
         var read = messageRepository.findById(id);
         if (read.isEmpty()) return;
-        if (!Objects.equals(read.get().getAuthor().getId(), authentication.getName())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
         messageRepository.delete(read.get());
     }
 
     @Override
-    public Collection<MessageTo> readAll(Authentication authentication) {
-        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserRoles.ROLE_ADMIN.name())))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-
+    public Collection<MessageTo> readAll() {
         return StreamSupport.stream(messageRepository.findAll().spliterator(), false).map(messageMapper::makeDto).toList();
+    }
+
+    @Override
+    public boolean isAuthorOf(String userUuid, Long messageId) {
+        var msg = messageRepository.findById(messageId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Chat not found"));
+        return Objects.equals(msg.getAuthor().getUuid(), userUuid);
     }
 }

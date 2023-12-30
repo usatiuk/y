@@ -18,7 +18,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @ToString
 @Accessors(chain = true)
-public class Person implements EntityWithId<String> {
+public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uuid;
@@ -57,8 +57,4 @@ public class Person implements EntityWithId<String> {
     @ManyToMany(mappedBy = "members")
     private Collection<Chat> chats;
 
-    @Override
-    public String getId() {
-        return uuid;
-    }
 }

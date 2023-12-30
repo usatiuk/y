@@ -47,19 +47,19 @@ public class PostController {
     }
 
     @PatchMapping(path = "/{id}")
-    public PostTo update(Authentication authentication, @PathVariable long id, @RequestBody PostCreateTo postCreateTo) {
-        return postService.updatePost(authentication, id, postCreateTo);
+    public PostTo update(@PathVariable long id, @RequestBody PostCreateTo postCreateTo) {
+        return postService.updatePost(id, postCreateTo);
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(Authentication authentication, @PathVariable long id) {
-        postService.deletePost(authentication, id);
+    public void delete(@PathVariable long id) {
+        postService.deletePost(id);
     }
 
     @GetMapping
-    public Collection<PostTo> getAll(Authentication authentication) {
-        return postService.readAll(authentication);
+    public Collection<PostTo> getAll() {
+        return postService.readAll();
     }
 
 }

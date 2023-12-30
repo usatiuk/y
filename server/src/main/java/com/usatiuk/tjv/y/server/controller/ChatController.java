@@ -26,29 +26,29 @@ public class ChatController {
     }
 
     @GetMapping(path = "/by-id/{id}")
-    public ChatTo get(Authentication authentication, @PathVariable Long id) {
-        return chatService.getById(authentication, id);
+    public ChatTo get(@PathVariable Long id) {
+        return chatService.getById(id);
     }
 
     @DeleteMapping(path = "/by-id/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(Authentication authentication, @PathVariable Long id) {
-        chatService.deleteById(authentication, id);
+    public void delete(@PathVariable Long id) {
+        chatService.deleteById(id);
     }
 
     @PatchMapping(path = "/by-id/{id}")
     public ChatTo update(Authentication authentication, @PathVariable Long id, @RequestBody ChatCreateTo chatCreateTo) {
         return chatService.update(authentication, id, chatCreateTo);
     }
-    
+
     @GetMapping(path = "/my")
     public Collection<ChatTo> getMy(Authentication authentication) {
         return chatService.getMy(authentication);
     }
 
     @GetMapping(path = "/by-id/{id}/members")
-    public Collection<PersonTo> getMembers(Authentication authentication, @PathVariable Long id) {
-        return chatService.getMembers(authentication, id);
+    public Collection<PersonTo> getMembers(@PathVariable Long id) {
+        return chatService.getMembers(id);
     }
 
 

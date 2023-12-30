@@ -82,7 +82,7 @@ public abstract class DemoDataDbTest {
                 new Person()
                         .setUsername("person1")
                         .setFullName("Person 1")
-                        .setPassword(passwordEncoder.encode(person1Password)));
+                        .setPassword(passwordEncoder.encode(person1Password)).setAdmin(true));
         person1Auth = new TokenResponseTo(jwtTokenService.generateToken(person1.getUuid()));
         person2 = personRepository.save(
                 new Person()

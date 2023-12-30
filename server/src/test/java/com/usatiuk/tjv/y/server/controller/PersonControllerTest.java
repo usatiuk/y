@@ -69,6 +69,17 @@ public class PersonControllerTest extends DemoDataDbTest {
     }
 
     @Test
+    void shouldDeleteSelf() {
+        var response = restTemplate.exchange(addr + "/person/self",
+                HttpMethod.DELETE, new HttpEntity<>(createAuthHeaders(person2Auth)), Object.class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        Assertions.assertFalse(personRepository.existsById(person2.getUuid()));
+    }
+
+    @Test
     void shouldGetFollowers() {
         var response = restTemplate.exchange(addr + "/person/followers",
                 HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person2Auth)), PersonTo[].class);

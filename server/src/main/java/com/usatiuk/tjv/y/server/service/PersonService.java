@@ -3,6 +3,7 @@ package com.usatiuk.tjv.y.server.service;
 import com.usatiuk.tjv.y.server.dto.PersonCreateTo;
 import com.usatiuk.tjv.y.server.dto.PersonTo;
 import com.usatiuk.tjv.y.server.entity.Person;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 
 import java.util.Collection;
@@ -20,7 +21,8 @@ public interface PersonService {
     PersonTo update(Authentication authentication, PersonCreateTo person);
 
     void deleteSelf(Authentication authentication);
-    void deleteByUuid(Authentication authentication, String uuid);
+    @PreAuthorize("hasRole('ROLE_ADMIN') or authentication.principal.username == #uuid")
+    void deleteByUuid(String uuid);
 
     Collection<PersonTo> readAll();
 
@@ -31,7 +33,9 @@ public interface PersonService {
     void removeFollower(Authentication authentication, String followee);
 
     Collection<PersonTo> getAdmins();
-    void addAdmin(Authentication caller, String uuid);
-    void removeAdmin(Authentication caller, String uuid);
+    @PreAuthorize("hasRole('ROLE_ADMIN') ")
+    void addAdmin(String uuid);
+    @PreAuthorize("hasRole('ROLE_ADMIN') ")
+    void removeAdmin(String uuid);
 
 }

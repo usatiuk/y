@@ -21,7 +21,7 @@ public class MessageController {
 
     @GetMapping(path = "/by-chat/{chatTd}")
     public Collection<MessageTo> get(Authentication authentication, @PathVariable Long chatTd) {
-        return messageService.getByChat(authentication, chatTd);
+        return messageService.getByChat(chatTd);
     }
 
     @PostMapping(path = "/by-chat/{chatId}")
@@ -30,19 +30,19 @@ public class MessageController {
     }
 
     @PatchMapping(path = "/by-id/{id}")
-    public MessageTo update(Authentication authentication, @PathVariable long id, @RequestBody MessageCreateTo messageCreateTo) {
-        return messageService.update(authentication, id, messageCreateTo);
+    public MessageTo update(@PathVariable long id, @RequestBody MessageCreateTo messageCreateTo) {
+        return messageService.update(id, messageCreateTo);
     }
 
     @DeleteMapping(path = "/by-id/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(Authentication authentication, @PathVariable long id) {
-        messageService.delete(authentication, id);
+    public void delete(@PathVariable long id) {
+        messageService.delete(id);
     }
 
     @GetMapping
-    public Collection<MessageTo> getAll(Authentication authentication) {
-        return messageService.readAll(authentication);
+    public Collection<MessageTo> getAll() {
+        return messageService.readAll();
     }
 
 

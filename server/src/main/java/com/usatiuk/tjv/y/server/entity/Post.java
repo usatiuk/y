@@ -17,7 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @ToString
 @Accessors(chain = true)
-public class Post implements EntityWithId<Long> {
+public class Post {
     @Id
     @GeneratedValue
     private Long id;
@@ -31,9 +31,4 @@ public class Post implements EntityWithId<Long> {
 
     @CreationTimestamp
     private Instant createdAt;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
 }

@@ -54,8 +54,8 @@ public class PersonController {
 
     @DeleteMapping(path = "/by-uuid/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteByUuid(Authentication authentication, @PathVariable String uuid) throws UserNotFoundException {
-        personService.deleteByUuid(authentication, uuid);
+    public void deleteByUuid(@PathVariable String uuid) throws UserNotFoundException {
+        personService.deleteByUuid(uuid);
     }
 
 
@@ -81,14 +81,14 @@ public class PersonController {
 
     @PutMapping(path = "/admins/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addAdmin(Authentication authentication, @PathVariable String uuid) throws UserNotFoundException {
-        personService.addAdmin(authentication, uuid);
+    public void addAdmin(@PathVariable String uuid) throws UserNotFoundException {
+        personService.addAdmin(uuid);
     }
 
     @DeleteMapping(path = "/admins/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAdmin(Authentication authentication, @PathVariable String uuid) throws UserNotFoundException {
-        personService.removeAdmin(authentication, uuid);
+    public void deleteAdmin(@PathVariable String uuid) throws UserNotFoundException {
+        personService.removeAdmin(uuid);
     }
 
     @PutMapping(path = "/following/{uuid}")

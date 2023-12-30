@@ -17,7 +17,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @ToString
 @Accessors(chain = true)
-public class Chat implements EntityWithId<Long> {
+public class Chat {
     @Id
     @GeneratedValue
     private Long id;
