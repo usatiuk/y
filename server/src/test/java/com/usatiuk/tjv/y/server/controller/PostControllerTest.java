@@ -51,7 +51,7 @@ public class PostControllerTest extends DemoDataDbTest {
     @Test
     void shouldGetPost() {
         var response = restTemplate.exchange(addr + "/post/" + post1.getId(), HttpMethod.GET,
-                HttpEntity.EMPTY, PostTo.class);
+                new HttpEntity<>(createAuthHeaders(person1Auth)), PostTo.class);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         var parsedResponse = response.getBody();
@@ -64,7 +64,7 @@ public class PostControllerTest extends DemoDataDbTest {
     @Test
     void shouldGetByAuthor() {
         var response = restTemplate.exchange(addr + "/post/by-author-uuid/" + person1.getUuid(), HttpMethod.GET,
-                HttpEntity.EMPTY, PostTo[].class);
+                new HttpEntity<>(createAuthHeaders(person1Auth)), PostTo[].class);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         var parsedResponse = response.getBody();

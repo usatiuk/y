@@ -1,14 +1,11 @@
 package com.usatiuk.tjv.y.server.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.usatiuk.tjv.y.server.dto.ErrorTo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,10 +21,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 @Configuration
@@ -42,17 +38,16 @@ public class WebSecurityConfig {
 
     @Component
     class ErrorAuthenticationEntryPoint implements AuthenticationEntryPoint {
-        @Override
-        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-                throws IOException {
 
-            var err = new ErrorTo(List.of("Authentication failed"), HttpStatus.UNAUTHORIZED.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            OutputStream responseStream = response.getOutputStream();
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(responseStream, err);
-            responseStream.flush();
+        private final HandlerExceptionResolver resolver;
+
+        ErrorAuthenticationEntryPoint(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+            this.resolver = resolver;
+        }
+
+        @Override
+        public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
+            resolver.resolveException(request, response, null, authException);
         }
     }
 
@@ -62,12 +57,7 @@ public class WebSecurityConfig {
         return http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/post/**")).permitAll()
-                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/post*")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/person")).permitAll()
-                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/person")).permitAll()
-                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/person/by-username/*")).permitAll()
-                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/person/by-uuid/*")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/token")).permitAll()
                         .requestMatchers(mvc.pattern("/error")).permitAll()
                         .anyRequest().hasAuthority(UserRoles.ROLE_USER.name()))

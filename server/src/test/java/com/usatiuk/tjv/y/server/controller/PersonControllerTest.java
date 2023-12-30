@@ -41,7 +41,7 @@ public class PersonControllerTest extends DemoDataDbTest {
     @Test
     void shouldGet() {
         var response = restTemplate.exchange(addr + "/person/by-username/" + person1.getUsername(),
-                HttpMethod.GET, HttpEntity.EMPTY, PersonTo.class);
+                HttpMethod.GET, new HttpEntity<>(createAuthHeaders(person1Auth)), PersonTo.class);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
