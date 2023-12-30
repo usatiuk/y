@@ -2,10 +2,7 @@ package com.usatiuk.tjv.y.server.controller;
 
 import com.usatiuk.tjv.y.server.dto.MessageCreateTo;
 import com.usatiuk.tjv.y.server.dto.MessageTo;
-import com.usatiuk.tjv.y.server.dto.converters.MessageMapper;
-import com.usatiuk.tjv.y.server.service.ChatService;
 import com.usatiuk.tjv.y.server.service.MessageService;
-import jakarta.persistence.EntityManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -16,15 +13,9 @@ import java.util.Collection;
 @RestController
 @RequestMapping(value = "/message", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MessageController {
-    private final ChatService chatService;
-    private final EntityManager entityManager;
-    private final MessageMapper messageMapper;
     private final MessageService messageService;
 
-    public MessageController(ChatService chatService, EntityManager entityManager, MessageMapper messageMapper, MessageService messageService) {
-        this.chatService = chatService;
-        this.entityManager = entityManager;
-        this.messageMapper = messageMapper;
+    public MessageController(MessageService messageService) {
         this.messageService = messageService;
     }
 

@@ -2,15 +2,12 @@ package com.usatiuk.tjv.y.server.controller;
 
 import com.usatiuk.tjv.y.server.dto.PersonCreateTo;
 import com.usatiuk.tjv.y.server.dto.PersonTo;
-import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
-import com.usatiuk.tjv.y.server.service.ChatService;
 import com.usatiuk.tjv.y.server.service.PersonService;
 import com.usatiuk.tjv.y.server.service.exceptions.UserAlreadyExistsException;
 import com.usatiuk.tjv.y.server.service.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -19,15 +16,9 @@ import java.util.Collection;
 @RequestMapping(value = "/person", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PersonController {
     private final PersonService personService;
-    private final ChatService chatService;
-    private final PersonMapper personMapper;
-    private final PasswordEncoder passwordEncoder;
 
-    public PersonController(PersonService personService, ChatService chatService, PersonMapper personMapper, PasswordEncoder passwordEncoder) {
+    public PersonController(PersonService personService) {
         this.personService = personService;
-        this.chatService = chatService;
-        this.personMapper = personMapper;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping
