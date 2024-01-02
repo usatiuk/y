@@ -50,12 +50,12 @@ public class Person {
     @JoinTable(name = "person_follows",
             joinColumns = @JoinColumn(name = "follower"),
             inverseJoinColumns = @JoinColumn(name = "followee"))
-    private Collection<Person> following;
+    private Collection<Person> following = new ArrayList<>();
 
     @ManyToMany(mappedBy = "following")
-    private Collection<Person> followers;
+    private Collection<Person> followers = new ArrayList<>();
 
     @ManyToMany(mappedBy = "members")
-    private Collection<Chat> chats;
+    private Collection<Chat> chats = new ArrayList<>();
 
 }
