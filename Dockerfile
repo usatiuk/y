@@ -21,6 +21,7 @@ RUN mkdir -p client/dist
 COPY --from=client /usr/src/app/client/dist ./client/dist
 
 ENV spring_profiles_active=prod
+ENV webdatadir=/usr/src/app/client/dist/
 
 COPY ./dockerentry.sh .
 
