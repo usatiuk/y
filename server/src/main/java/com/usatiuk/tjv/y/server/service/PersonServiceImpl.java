@@ -42,7 +42,6 @@ public class PersonServiceImpl implements PersonService {
         Person toCreate = new Person();
 
         toCreate.setUsername(signupRequest.username())
-                .setPassword(signupRequest.password())
                 .setFullName(signupRequest.fullName());
 
         toCreate.setPassword(passwordEncoder.encode(signupRequest.password()));
