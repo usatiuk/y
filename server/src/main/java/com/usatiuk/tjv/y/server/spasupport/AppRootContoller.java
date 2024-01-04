@@ -1,5 +1,6 @@
 package com.usatiuk.tjv.y.server.spasupport;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 @RestController
 @RequestMapping(value = "/app", produces = MediaType.TEXT_HTML_VALUE)
 @Profile("prod")
+@Hidden
 class AppRootContoller {
     private final File indexFile;
 

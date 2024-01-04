@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @ApiResponse(
         responseCode = "409",
-        description = "Conflict - creating/updating what is requested would conflict with existing data",
+        description = "Conflict - creating/updating what is requested would conflict with existing data (e.g. usernames must be unique)",
         content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(implementation = ErrorTo.class)

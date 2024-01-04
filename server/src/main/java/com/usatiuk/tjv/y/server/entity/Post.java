@@ -30,5 +30,5 @@ public class Post {
     private String text;
 
     @CreationTimestamp
-    private Instant createdAt;
+    private Instant createdAt = Instant.now();
 }

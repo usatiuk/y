@@ -9,6 +9,7 @@ import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.MessageRepository;
 import com.usatiuk.tjv.y.server.service.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 @Service("messageService")
+@Transactional
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;

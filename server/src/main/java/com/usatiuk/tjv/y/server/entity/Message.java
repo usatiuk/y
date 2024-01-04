@@ -29,7 +29,7 @@ public class Message {
     private Person author;
 
     @CreationTimestamp
-    private Instant createdAt;
+    private Instant createdAt = Instant.now();
 
     @Lob
     @NotBlank(message = "Message can't be empty")

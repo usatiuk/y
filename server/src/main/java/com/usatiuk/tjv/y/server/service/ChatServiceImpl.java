@@ -11,6 +11,7 @@ import com.usatiuk.tjv.y.server.repository.ChatRepository;
 import com.usatiuk.tjv.y.server.service.exceptions.BadInputException;
 import com.usatiuk.tjv.y.server.service.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 @Service("chatService")
+@Transactional
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;

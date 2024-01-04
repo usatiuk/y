@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Service
+@Transactional
 public class PersonServiceImpl implements PersonService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
@@ -76,7 +77,6 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    @Transactional
     public PersonTo update(Authentication authentication, PersonCreateTo person) {
         var found = personRepository.findById(authentication.getName()).orElseThrow(NotFoundException::new);
 
@@ -90,7 +90,6 @@ public class PersonServiceImpl implements PersonService {
         return personMapper.makeDto(found);
     }
 
-    @Transactional
     public void deleteByUuid(String uuid) {
         var person = personRepository.findById(uuid).orElseThrow(NotFoundException::new);
         for (Chat c : person.getChats()) {
@@ -104,7 +103,6 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    @Transactional
     public void deleteSelf(Authentication authentication) {
         deleteByUuid(authentication.getName());
     }

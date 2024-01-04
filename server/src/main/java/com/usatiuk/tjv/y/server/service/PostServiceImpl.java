@@ -8,6 +8,7 @@ import com.usatiuk.tjv.y.server.entity.Post;
 import com.usatiuk.tjv.y.server.repository.PostRepository;
 import com.usatiuk.tjv.y.server.service.exceptions.NotFoundException;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 @Service("postService")
+@Transactional
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
