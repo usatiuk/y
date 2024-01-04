@@ -22,5 +22,7 @@ Also, to prevent misuse of our platform, it is required to implement some admin 
 
 It should be enough to just run `docker compose -f docker-compose.example.yml up` in the root, and the app should be soon available at [http://localhost:8080](http://localhost:8080)
 
+Also, the api documentation is available at [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
 Also, here's the entity relationship diagram:
 ![DB](db.png)
