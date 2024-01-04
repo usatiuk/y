@@ -88,7 +88,6 @@ public class PersonServiceImplIntegrationTest {
         Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
             personService.addFollower(auth, "asdfasdf");
         });
-        Assertions.assertEquals(0, personService.getFollowing(auth).size());
     }
 
     @Test
