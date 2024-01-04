@@ -4,6 +4,7 @@ import com.usatiuk.tjv.y.server.dto.PersonCreateTo;
 import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,6 +77,18 @@ public class PersonServiceImplIntegrationTest {
         Assertions.assertEquals(0, personService.getFollowing(auth).size());
         personService.addFollower(auth, person2.getUuid());
         Assertions.assertIterableEquals(List.of(personMapper.makeDto(person2)), personService.getFollowing(auth));
+    }
+
+    @Test
+    @WithUserDetails(value = "person1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    void shouldAddFollowingThrows() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        Assertions.assertEquals(0, personService.getFollowing(auth).size());
+        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            personService.addFollower(auth, "asdfasdf");
+        });
+        Assertions.assertEquals(0, personService.getFollowing(auth).size());
     }
 
     @Test
