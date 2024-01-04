@@ -45,6 +45,19 @@ public class ChatControllerTest extends DemoDataDbTest {
     }
 
     @Test
+    void chatCreateWithBadUuid404() {
+        var response = restTemplate.exchange(addr + "/chat", HttpMethod.POST,
+                new HttpEntity<>(new ChatCreateTo("chatnew", new String[]{person1.getUuid(), "asdfasdfasdf"}), createAuthHeaders(person1Auth)),
+                ErrorTo.class);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+        var toResponse = response.getBody();
+        Assertions.assertNotNull(toResponse);
+    }
+
+    @Test
     void shouldGetChat() {
         for (TokenResponseTo t : new TokenResponseTo[]{person1Auth, person2Auth}) {
             var response = restTemplate.exchange(addr + "/chat/by-id/" + chat1.getId(), HttpMethod.GET,

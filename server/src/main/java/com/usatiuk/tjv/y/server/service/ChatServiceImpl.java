@@ -48,7 +48,11 @@ public class ChatServiceImpl implements ChatService {
 
         chat.setCreator(entityManager.getReference(Person.class, authentication.getName()));
         chat.setMembers(Arrays.stream(chatCreateTo.memberUuids()).map(
-                p -> entityManager.getReference(Person.class, p)
+                p -> {
+                    if (entityManager.find(Person.class, p) == null)
+                        throw new NotFoundException("User with uuid " + p + " not found");
+                    return entityManager.getReference(Person.class, p);
+                }
         ).toList());
         chat.setName(chatCreateTo.name());
 
@@ -67,7 +71,11 @@ public class ChatServiceImpl implements ChatService {
             throw new BadInputException("Chat must have members other than its creator");
 
         chat.setMembers(new ArrayList<>(Arrays.stream(chatCreateTo.memberUuids()).map(
-                p -> entityManager.getReference(Person.class, p)
+                p -> {
+                    if (entityManager.find(Person.class, p) == null)
+                        throw new NotFoundException("User with uuid " + p + " not found");
+                    return entityManager.getReference(Person.class, p);
+                }
         ).toList()));
         chat.setName(chatCreateTo.name());
 

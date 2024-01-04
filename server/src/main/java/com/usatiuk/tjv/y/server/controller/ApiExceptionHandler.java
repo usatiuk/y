@@ -47,9 +47,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
-        return handleExceptionInternal(ex,
-                new ErrorTo(List.of("Something is wrong with your request"), HttpStatus.BAD_REQUEST.value()),
-                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        if (ex.getRootCause() instanceof ConstraintViolationException) {
+            return handleConstraintViolation((ConstraintViolationException) ex.getRootCause(), request);
+        } else {
+            return handleExceptionInternal(ex,
+                    new ErrorTo(List.of("Something is wrong with your request"), HttpStatus.BAD_REQUEST.value()),
+                    new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        }
     }
 
     @ExceptionHandler(AuthenticationException.class)
