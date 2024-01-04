@@ -4,11 +4,11 @@ import com.usatiuk.tjv.y.server.dto.PersonCreateTo;
 import com.usatiuk.tjv.y.server.dto.converters.PersonMapper;
 import com.usatiuk.tjv.y.server.entity.Person;
 import com.usatiuk.tjv.y.server.repository.PersonRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -85,7 +85,7 @@ public class PersonServiceImplIntegrationTest {
         var auth = SecurityContextHolder.getContext().getAuthentication();
 
         Assertions.assertEquals(0, personService.getFollowing(auth).size());
-        Assertions.assertThrows(EntityNotFoundException.class, () -> {
+        Assertions.assertThrows(JpaObjectRetrievalFailureException.class, () -> {
             personService.addFollower(auth, "asdfasdf");
         });
         Assertions.assertEquals(0, personService.getFollowing(auth).size());
