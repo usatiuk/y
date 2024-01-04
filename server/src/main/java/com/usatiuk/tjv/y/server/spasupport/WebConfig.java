@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebMvc
 @Profile("prod")
+// A bit of a mess, but even then it seems to be the simplest way to serve a single page application...
 public class WebConfig implements WebMvcConfigurer {
     private final AppResourceResolver appResourceResolver;
 

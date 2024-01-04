@@ -7,9 +7,11 @@ import com.usatiuk.tjv.y.server.service.exceptions.NotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -41,6 +43,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                     new ErrorTo(List.of("Error"), HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
         }
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
+        return handleExceptionInternal(ex,
+                new ErrorTo(List.of("Something is wrong with your request"), HttpStatus.BAD_REQUEST.value()),
+                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -92,6 +101,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
+    @ExceptionHandler(JpaObjectRetrievalFailureException.class)
+    protected ResponseEntity<Object> handleEJpaObjectRetrievalFailureException(JpaObjectRetrievalFailureException ex, WebRequest request) {
+        return handleExceptionInternal(ex,
+                new ErrorTo(List.of(ex.getMessage()), HttpStatus.NOT_FOUND.value()),
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     protected ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {

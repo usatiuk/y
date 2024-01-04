@@ -1,4 +1,6 @@
 package com.usatiuk.tjv.y.server.dto;
 
-public record TokenRequestTo(String username, String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record TokenRequestTo(@NotBlank String username, @NotBlank String password) {
 }

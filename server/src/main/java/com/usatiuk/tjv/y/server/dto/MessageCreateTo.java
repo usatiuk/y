@@ -1,4 +1,6 @@
 package com.usatiuk.tjv.y.server.dto;
 
-public record MessageCreateTo(String contents) {
+import jakarta.validation.constraints.NotBlank;
+
+public record MessageCreateTo(@NotBlank String contents) {
 }

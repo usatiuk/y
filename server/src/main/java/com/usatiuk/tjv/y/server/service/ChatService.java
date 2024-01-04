@@ -18,7 +18,7 @@ public interface ChatService {
 
     @PreAuthorize("@chatService.isMemberOf(authentication.principal.username, #id)")
     ChatTo getById(Long id);
-    @PreAuthorize("@chatService.isMemberOf(authentication.principal.username, #id)")
+    @PreAuthorize("@chatService.isCreatorOf(authentication.principal.username, #id)")
     void deleteById(Long id);
 
     @PreAuthorize("@chatService.isMemberOf(authentication.principal.username, #id)")
