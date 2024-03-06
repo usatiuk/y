@@ -1,9 +1,9 @@
 version: "3.8"
 services:
   yapp:
-    image: gitlab.fit.cvut.cz:5050/usatiste/tjv-semestralka:master
+#    image: gitlab.fit.cvut.cz:5050/usatiste/tjv-semestralka:master
 # or
-#    build: ./
+    build: ./
     restart: unless-stopped
     ports:
       - "8080:8080"
