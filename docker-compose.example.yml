@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   yapp:
-#    image: gitlab.fit.cvut.cz:5050/usatiste/tjv-semestralka:master
+#    image: ghcr.io/usatiuk/y:main
 # or
     build: ./
     restart: unless-stopped
