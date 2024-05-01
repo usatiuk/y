@@ -6,10 +6,6 @@ name: Docker
 # documentation.
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_run:
     workflows: ["Java CI with Gradle"]
     branches: [main]
