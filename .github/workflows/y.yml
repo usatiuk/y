@@ -71,6 +71,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install docker for ACT runner
+        run: apt-get update && apt-get install -y sudo docker.io
+        if: env.ACT=='true'
+
       # Set up BuildKit Docker container builder to be able to build
       # multi-platform images and export cache
       # https://github.com/docker/setup-buildx-action
